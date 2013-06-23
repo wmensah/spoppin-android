@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Spoppin!</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="menu_settings">Settings</string>
+    <string name="spop_prompt_message">How is %s?</string>
+    <string name="spop_prompt_title">Thoughts...</string>
+    <string name="spops">Spops</string>
+    <string name="sucks">Sucks</string>
+    <string name="spoppin">Spoppin</string>
+    <string name="menu_venue_request">Request New Venue</string>
+    <string name="str_use_my_location">Use My Location</string>
+
+</resources>
