@@ -1,5 +1,8 @@
 package com.example.spoppin;
 
+import java.util.List;
+import java.util.Map.Entry;
+
 import com.example.spoppin.RequestsAndResponses.NewVenueRequest;
 import com.example.spoppin.RequestsAndResponses.NewVenueResponse;
 
@@ -14,11 +17,20 @@ import android.widget.Button;
 import android.widget.TextView;
 
 public class VenueRequestActivity extends BaseSpoppinActivity implements IGPSActivity{
-	String lat, lon;
+	private double latitude;
+	private double longitude;
+	
 	private GPS gps;
 	
 	// requests
 	NewVenueRequest nvr = null;
+	
+	TextView txtName;
+	TextView txtStreet;
+	TextView txtCity;
+	TextView txtState;
+	TextView txtZip;
+	TextView txtCountry;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -49,6 +61,13 @@ public class VenueRequestActivity extends BaseSpoppinActivity implements IGPSAct
 		    });
 	    }
 	    
+	    txtName = (TextView)findViewById(R.id.txtName);
+	    txtStreet = (TextView)findViewById(R.id.txtStreet);
+	    txtCity = (TextView)findViewById(R.id.txtCity);
+	    txtState = (TextView)findViewById(R.id.txtState);
+	    txtZip = (TextView)findViewById(R.id.txtZip);
+	    txtCountry = (TextView)findViewById(R.id.txtCountry);
+	    
 	    nvr = new NewVenueRequest(this);
 	    Button btnSubmitRequest = (Button)findViewById(R.id.btnSubmitRequest);
 	    if (btnSubmitRequest != null){
@@ -59,8 +78,22 @@ public class VenueRequestActivity extends BaseSpoppinActivity implements IGPSAct
 					String sClassName = "com.example.spoppin.VenueRequestActivity";   
 				    Class<?> c;
 					try {
+						//TODO: Validate input
 						c = Class.forName(sClassName);
 						nvr.setResponseHandler(c.getMethod("NewVenueRequest_ResponseHandler"));
+						
+						// Request paramters
+						List<RequestParameter> params = new java.util.ArrayList<RequestParameter>();
+						params.add(new RequestParameter("name", txtName.getText().toString()));
+						params.add(new RequestParameter("street", txtStreet.getText().toString()));
+						params.add(new RequestParameter("city", txtCity.getText().toString()));
+						params.add(new RequestParameter("state", txtState.getText().toString()));
+						params.add(new RequestParameter("zip", txtZip.getText().toString()));
+						params.add(new RequestParameter("country", txtCountry.getText().toString()));
+						params.add(new RequestParameter("latitude", Double.toString(latitude)));
+						params.add(new RequestParameter("longitude", Double.toString(longitude)));
+						
+						nvr.buildRequest(params);						
 						nvr.sendRequest();
 					} catch (ClassNotFoundException e) {
 						e.printStackTrace();
@@ -87,29 +120,23 @@ public class VenueRequestActivity extends BaseSpoppinActivity implements IGPSAct
 		if (address == null)
 			return;
 		
-		TextView street = (TextView)findViewById(R.id.txtStreet);
-		if(street != null && address.getAddressLine(0) != null)
-			street.setText(address.getAddressLine(0));
+		if(txtStreet != null && address.getAddressLine(0) != null)
+			txtStreet.setText(address.getAddressLine(0));
 		
-		TextView city = (TextView)findViewById(R.id.txtCity);
-		if (city != null && address.getLocale() != null)
-			city.setText(address.getLocality());
+		if (txtCity != null && address.getLocale() != null)
+			txtCity.setText(address.getLocality());
 		
-		TextView state = (TextView)findViewById(R.id.txtState);
-		if (state != null)
-			state.setText(address.getAdminArea());
+		if (txtState != null)
+			txtState.setText(address.getAdminArea());
 		
-		TextView zip = (TextView)findViewById(R.id.txtZip);
-		if (zip != null &&  address.getPostalCode() != null)
-			zip.setText(address.getPostalCode());
+		if (txtZip != null &&  address.getPostalCode() != null)
+			txtZip.setText(address.getPostalCode());
 		
-		TextView country = (TextView)findViewById(R.id.txtCountry);
-		if (country != null && address.getAddressLine(2) != null)
-			country.setText(address.getAddressLine(2));
+		if (txtCountry != null && address.getAddressLine(2) != null)
+			txtCountry.setText(address.getAddressLine(2));
 	}
 	
-	private double latitude;
-	private double longitude;
+
 
 	@Override
 	public void locationChanged(double longitude, double latitude) {

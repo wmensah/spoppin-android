@@ -1,11 +1,15 @@
 package com.example.spoppin.RequestsAndResponses;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map.Entry;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.example.spoppin.APIHelper;
+import com.example.spoppin.RequestParameter;
 import com.example.spoppin.ServerResponseEnum;
 
 import android.app.Activity;
@@ -19,10 +23,8 @@ public class NewVenueRequest extends Request {
 	}
 
 	@Override
-	protected void buildRequest() {
-		Uri.Builder b = Uri.parse(APIHelper.getWebserviceUrl()).buildUpon();
-		b.appendQueryParameter("request","venuerequest");
-		super.setRequestUri(b.build());				
+	public void buildRequest(List<RequestParameter> params) {
+		super.buildRequest("venuerequest", params);	
 	}
 
 	@Override
@@ -47,5 +49,4 @@ public class NewVenueRequest extends Request {
 	public NewVenueResponse getResponse(){
 		return this.response;
 	}
-
 }

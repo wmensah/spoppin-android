@@ -6,6 +6,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
+import java.util.AbstractMap.SimpleEntry;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map.Entry;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -16,6 +20,8 @@ import org.apache.http.params.BasicHttpParams;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.example.spoppin.APIHelper;
+import com.example.spoppin.RequestParameter;
 import com.example.spoppin.ServerResponseEnum;
 
 import android.app.Activity;
@@ -32,14 +38,8 @@ public abstract class Request extends AsyncTask<Object, Object, Object>{
 		this.requestingPage = requestingPage;
 	}
 	
-	protected abstract void buildRequest();
+	protected abstract void buildRequest(List<RequestParameter> params);
 	protected abstract void handleResponse(Object result) throws JSONException;
-	protected void setRequestUri(String url){
-		requestUri = Uri.parse(url);
-	}
-	protected void setRequestUri(Uri uri){
-		requestUri = uri;
-	}
 	public abstract void setResponseHandler(Method responseHandler);
 	
 	public boolean IsValid(){
@@ -50,7 +50,6 @@ public abstract class Request extends AsyncTask<Object, Object, Object>{
 	
 	@Override
 	protected Object doInBackground(Object... arg0){
-		buildRequest();
 		
 		if (!IsValid())
 			return null;
@@ -107,6 +106,7 @@ public abstract class Request extends AsyncTask<Object, Object, Object>{
 		}
 		result = sb.toString();
 		Log.w("spoplog", result);
+		
 		Response resval = new Response();
 		resval.data = result;
 		try {
@@ -154,5 +154,17 @@ public abstract class Request extends AsyncTask<Object, Object, Object>{
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	protected void buildRequest(String request, List<RequestParameter> params){
+		Uri.Builder b = Uri.parse(APIHelper.getWebserviceUrl()).buildUpon();
+		b.appendQueryParameter("request",request);
+		
+		// Append the parameters
+		for (int i = 0; i < params.size(); i++){
+			b.appendQueryParameter(params.get(i).Key, params.get(i).Value);
+		}
+		
+		requestUri = b.build();
 	}
 }
