@@ -20,7 +20,6 @@ public class UIUtils {
 	public static Address GeocodeCoordinates(Activity activity, double lat, double lng, int maxResults) {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD && Geocoder.isPresent()){
-        	Toast(activity, "Geocoding...");
         	Geocoder gcd = new Geocoder(activity, Locale.getDefault());
 	        List<Address> addresses = null;
 	        try {

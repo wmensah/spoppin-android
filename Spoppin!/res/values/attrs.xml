@@ -1,0 +1,5 @@
+<resources>
+    <declare-styleable name="Progressview">
+    <attr name="progressLabel" format="string"></attr>
+</declare-styleable>
+</resources>

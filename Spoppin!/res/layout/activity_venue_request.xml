@@ -4,7 +4,29 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <TextView
+    <ScrollView
+        android:id="@+id/scrollView1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <LinearLayout
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:gravity="center_horizontal"
+	        android:orientation="vertical" >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+
+            <com.example.spoppin.ProgressView
+                android:id="@+id/pvVenueRequest"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" >
+            </com.example.spoppin.ProgressView>
+            </LinearLayout>
+	        
+            <TextView
         android:id="@+id/textView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -87,5 +109,9 @@
             android:text="Submit Request" />
 
     </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+    
 
 </LinearLayout>

@@ -7,6 +7,9 @@ import com.example.spoppin.RequestsAndResponses.NewVenueRequest;
 import com.example.spoppin.RequestsAndResponses.NewVenueResponse;
 
 import Utilities.UIUtils;
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Address;
 import android.os.Bundle;
@@ -15,6 +18,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class VenueRequestActivity extends BaseSpoppinActivity implements IGPSActivity{
 	private double latitude;
@@ -31,6 +35,7 @@ public class VenueRequestActivity extends BaseSpoppinActivity implements IGPSAct
 	TextView txtState;
 	TextView txtZip;
 	TextView txtCountry;
+	ProgressView progressView;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -40,7 +45,10 @@ public class VenueRequestActivity extends BaseSpoppinActivity implements IGPSAct
 	    setContentView(R.layout.activity_venue_request);
 	    
 	    gps = new GPS(this);
-	    UIUtils.Toast(this, "Finding your location...");
+	    //Toast.makeText(this, R.string.toast_finding_location, Toast.LENGTH_SHORT).show();
+	    progressView = (ProgressView)findViewById(R.id.pvVenueRequest);
+	    if (progressView != null)
+	    	progressView.setLabelText("Finding your location...");
 	    
 	    Button btnLocation = (Button)findViewById(R.id.btnGetLocation);
 	    if (btnLocation != null){
@@ -49,13 +57,16 @@ public class VenueRequestActivity extends BaseSpoppinActivity implements IGPSAct
 				@Override
 				public void onClick(View arg0) {
 					// TODO Auto-generated method stub
+					progressView.setVisibility(View.VISIBLE);
 					Address address = UIUtils.GeocodeCoordinates(VenueRequestActivity.this
 							, latitude
 							, longitude, 1);
 					if (address != null){
 						PopulateAddressFields(address);
 					}else{
-						UIUtils.Toast(VenueRequestActivity.this, "Address not found");
+						//Toast.makeText(VenueRequestActivity.this, "Address not found", Toast.LENGTH_SHORT).show();
+						SpopPrompt("Find location", "Address not found. Please try again later.");
+						progressView.setVisibility(View.INVISIBLE);
 					}
 				}	    	
 		    });
@@ -112,9 +123,27 @@ public class VenueRequestActivity extends BaseSpoppinActivity implements IGPSAct
 	public void NewVenueRequest_ResponseHandler(){
 		if (nvr != null){
 			NewVenueResponse resval = nvr.getResponse();
-			UIUtils.Toast(this, (resval.success? "Request has been submitted" : "Request submission failed"));
+			ShowSubmitResultPrompt(resval.success, this);
 		}
 	}
+	
+    private void ShowSubmitResultPrompt(final boolean success, final Activity sender){
+    	AlertDialog.Builder builder = new AlertDialog.Builder(this);
+    	builder.setMessage(success? R.string.venue_request_submitted : R.string.venue_request_failed);
+    	builder.setTitle(R.string.dialog_venue_request_title);
+    	builder.setPositiveButton(R.string.dialog_ok, new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				// if success, return to the MainActivity
+				if (success){
+					sender.finish();
+				}
+			}
+		});
+    	AlertDialog dialog = builder.create();
+    	dialog.show();
+    }
 	
 	private void PopulateAddressFields(Address address){
 		if (address == null)
@@ -144,16 +173,16 @@ public class VenueRequestActivity extends BaseSpoppinActivity implements IGPSAct
 		this.latitude = latitude;
 		this.longitude = longitude;
 		
-			UIUtils.Toast(this, latitude + "--" + longitude);
 			//Geocode 
-					Address address = UIUtils.GeocodeCoordinates(VenueRequestActivity.this
-							, latitude
-							, longitude, 1);
-					if (address != null){
-						PopulateAddressFields(address);
-					}else{
-						UIUtils.Toast(VenueRequestActivity.this, "Address not found");
-					}
+			Address address = UIUtils.GeocodeCoordinates(VenueRequestActivity.this
+					, latitude
+					, longitude, 1);
+			if (address != null){
+				PopulateAddressFields(address);
+			}else{
+				Toast.makeText(VenueRequestActivity.this, "Address not found", Toast.LENGTH_SHORT).show();
+				progressView.setVisibility(View.INVISIBLE);
+			}
 		}
 	}
 
@@ -168,5 +197,22 @@ public class VenueRequestActivity extends BaseSpoppinActivity implements IGPSAct
 	public void gpsEnabled(){
 
 	}
+	
+	private void SpopPrompt(String title, String message){
+    	AlertDialog.Builder builder = new AlertDialog.Builder(VenueRequestActivity.this);
+    	builder.setTitle(title);
+    	builder.setMessage(message);
+    	builder.setCancelable(true);
+        builder.setNeutralButton(android.R.string.ok,
+                new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.cancel();
+            }
+        });
+
+    	
+    	AlertDialog dialog = builder.create();
+    	dialog.show();
+    }
 
 }

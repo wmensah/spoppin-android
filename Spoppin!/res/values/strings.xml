@@ -11,5 +11,10 @@
     <string name="spoppin">Spoppin</string>
     <string name="menu_venue_request">Request New Venue</string>
     <string name="str_use_my_location">Use My Location</string>
+    <string name="venue_request_submitted">Your request has been submitted!</string>
+    <string name="venue_request_failed">Sorry, your request could not be submitted</string>
+    <string name="dialog_ok">Okay!</string>
+    <string name="dialog_venue_request_title">Venue Request</string>
+    <string name="toast_finding_location">Finding your location...</string>
 
 </resources>
