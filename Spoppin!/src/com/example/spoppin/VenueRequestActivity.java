@@ -1,13 +1,10 @@
 package com.example.spoppin;
 
 import java.util.List;
-import java.util.Map.Entry;
-
 import com.example.spoppin.RequestsAndResponses.NewVenueRequest;
 import com.example.spoppin.RequestsAndResponses.NewVenueResponse;
 
 import Utilities.UIUtils;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -18,7 +15,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class VenueRequestActivity extends BaseSpoppinActivity implements IGPSActivity{
 	private double latitude;
@@ -45,10 +41,8 @@ public class VenueRequestActivity extends BaseSpoppinActivity implements IGPSAct
 	    setContentView(R.layout.activity_venue_request);
 	    
 	    gps = new GPS(this);
-	    //Toast.makeText(this, R.string.toast_finding_location, Toast.LENGTH_SHORT).show();
 	    progressView = (ProgressView)findViewById(R.id.pvVenueRequest);
-	    if (progressView != null)
-	    	progressView.setLabelText("Finding your location...");
+	    SetProgressLabelText("Finding your location...", true);
 	    
 	    Button btnLocation = (Button)findViewById(R.id.btnGetLocation);
 	    if (btnLocation != null){
@@ -56,18 +50,7 @@ public class VenueRequestActivity extends BaseSpoppinActivity implements IGPSAct
 	
 				@Override
 				public void onClick(View arg0) {
-					// TODO Auto-generated method stub
-					progressView.setVisibility(View.VISIBLE);
-					Address address = UIUtils.GeocodeCoordinates(VenueRequestActivity.this
-							, latitude
-							, longitude, 1);
-					if (address != null){
-						PopulateAddressFields(address);
-					}else{
-						//Toast.makeText(VenueRequestActivity.this, "Address not found", Toast.LENGTH_SHORT).show();
-						SpopPrompt("Find location", "Address not found. Please try again later.");
-						progressView.setVisibility(View.INVISIBLE);
-					}
+					HandleLocationChanged(latitude, longitude);
 				}	    	
 		    });
 	    }
@@ -86,6 +69,8 @@ public class VenueRequestActivity extends BaseSpoppinActivity implements IGPSAct
 
 				@Override
 				public void onClick(View v) {
+					SetProgressLabelText("Submitting request...", true);
+					
 					String sClassName = "com.example.spoppin.VenueRequestActivity";   
 				    Class<?> c;
 					try {
@@ -93,7 +78,7 @@ public class VenueRequestActivity extends BaseSpoppinActivity implements IGPSAct
 						c = Class.forName(sClassName);
 						nvr.setResponseHandler(c.getMethod("NewVenueRequest_ResponseHandler"));
 						
-						// Request paramters
+						// Request parameters
 						List<RequestParameter> params = new java.util.ArrayList<RequestParameter>();
 						params.add(new RequestParameter("name", txtName.getText().toString()));
 						params.add(new RequestParameter("street", txtStreet.getText().toString()));
@@ -109,7 +94,6 @@ public class VenueRequestActivity extends BaseSpoppinActivity implements IGPSAct
 					} catch (ClassNotFoundException e) {
 						e.printStackTrace();
 					} catch (NoSuchMethodException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					} 
 
@@ -121,29 +105,20 @@ public class VenueRequestActivity extends BaseSpoppinActivity implements IGPSAct
 	}
 	
 	public void NewVenueRequest_ResponseHandler(){
+		progressView.setVisibility(View.INVISIBLE);
 		if (nvr != null){
 			NewVenueResponse resval = nvr.getResponse();
-			ShowSubmitResultPrompt(resval.success, this);
+			SpopPrompt(this.getString(R.string.dialog_venue_request_title)
+					, this.getString(resval.success? R.string.venue_request_submitted : R.string.venue_request_failed)
+					, new DialogInterface.OnClickListener() {
+						
+						@Override
+						public void onClick(DialogInterface arg0, int arg1) {
+							VenueRequestActivity.this.finish();
+						}
+					});
 		}
 	}
-	
-    private void ShowSubmitResultPrompt(final boolean success, final Activity sender){
-    	AlertDialog.Builder builder = new AlertDialog.Builder(this);
-    	builder.setMessage(success? R.string.venue_request_submitted : R.string.venue_request_failed);
-    	builder.setTitle(R.string.dialog_venue_request_title);
-    	builder.setPositiveButton(R.string.dialog_ok, new DialogInterface.OnClickListener() {
-			
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				// if success, return to the MainActivity
-				if (success){
-					sender.finish();
-				}
-			}
-		});
-    	AlertDialog dialog = builder.create();
-    	dialog.show();
-    }
 	
 	private void PopulateAddressFields(Address address){
 		if (address == null)
@@ -164,31 +139,32 @@ public class VenueRequestActivity extends BaseSpoppinActivity implements IGPSAct
 		if (txtCountry != null && address.getAddressLine(2) != null)
 			txtCountry.setText(address.getAddressLine(2));
 	}
-	
-
 
 	@Override
 	public void locationChanged(double longitude, double latitude) {
 		if (this.latitude == 0 && this.longitude == 0){
-		this.latitude = latitude;
-		this.longitude = longitude;
-		
-			//Geocode 
-			Address address = UIUtils.GeocodeCoordinates(VenueRequestActivity.this
-					, latitude
-					, longitude, 1);
-			if (address != null){
-				PopulateAddressFields(address);
-			}else{
-				Toast.makeText(VenueRequestActivity.this, "Address not found", Toast.LENGTH_SHORT).show();
-				progressView.setVisibility(View.INVISIBLE);
-			}
+			this.latitude = latitude;
+			this.longitude = longitude;
+		}
+		HandleLocationChanged(latitude, longitude);
+	}
+	
+	private void HandleLocationChanged(double latitude, double longitude){
+		//Geocode 
+		progressView.setVisibility(View.VISIBLE);
+		Address address = UIUtils.GeocodeCoordinates(VenueRequestActivity.this
+				, latitude
+				, longitude, 1);
+		progressView.setVisibility(View.INVISIBLE);
+		if (address != null){
+			PopulateAddressFields(address);
+		}else{
+			SpopPrompt(getString(R.string.loc_find_location), getString(R.string.msg_address_not_found), null);
 		}
 	}
 
 	@Override
 	public void gpsDisabled() {
-		// TODO Auto-generated method stub
 		Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
         startActivity(intent);
 	}
@@ -198,21 +174,27 @@ public class VenueRequestActivity extends BaseSpoppinActivity implements IGPSAct
 
 	}
 	
-	private void SpopPrompt(String title, String message){
+	private void SpopPrompt(String title, String message, DialogInterface.OnClickListener action){
     	AlertDialog.Builder builder = new AlertDialog.Builder(VenueRequestActivity.this);
     	builder.setTitle(title);
     	builder.setMessage(message);
     	builder.setCancelable(true);
-        builder.setNeutralButton(android.R.string.ok,
-                new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                dialog.cancel();
-            }
-        });
-
-    	
+    	if (action == null)
+    		action = new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    dialog.cancel();
+                }
+            };
+        builder.setNeutralButton(android.R.string.ok, action);
     	AlertDialog dialog = builder.create();
     	dialog.show();
     }
+	
+	private void SetProgressLabelText(String text, Boolean show){
+		if (progressView != null)
+	    	progressView.setLabelText(text);
+		if (show)
+			progressView.setVisibility(View.VISIBLE);
+	}
 
 }
