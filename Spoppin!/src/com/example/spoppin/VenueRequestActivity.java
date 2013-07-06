@@ -4,6 +4,7 @@ import java.util.List;
 import com.example.spoppin.RequestsAndResponses.NewVenueRequest;
 import com.example.spoppin.RequestsAndResponses.NewVenueResponse;
 
+import Utilities.StringUtils;
 import Utilities.UIUtils;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -31,7 +32,6 @@ public class VenueRequestActivity extends BaseSpoppinActivity implements IGPSAct
 	TextView txtState;
 	TextView txtZip;
 	TextView txtCountry;
-	ProgressView progressView;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -41,7 +41,7 @@ public class VenueRequestActivity extends BaseSpoppinActivity implements IGPSAct
 	    setContentView(R.layout.activity_venue_request);
 	    
 	    gps = new GPS(this);
-	    progressView = (ProgressView)findViewById(R.id.pvVenueRequest);
+	    
 	    SetProgressLabelText("Finding your location...", true);
 	    
 	    Button btnLocation = (Button)findViewById(R.id.btnGetLocation);
@@ -50,6 +50,7 @@ public class VenueRequestActivity extends BaseSpoppinActivity implements IGPSAct
 	
 				@Override
 				public void onClick(View arg0) {
+					gps.resumeGPS();
 					HandleLocationChanged(latitude, longitude);
 				}	    	
 		    });
@@ -69,6 +70,23 @@ public class VenueRequestActivity extends BaseSpoppinActivity implements IGPSAct
 
 				@Override
 				public void onClick(View v) {
+					// check Internet connection
+					if (!(VenueRequestActivity.this.CheckInternet())){
+						ShowOkDialog("Connectivity", "No internet connection", null);
+						return;
+					}
+					
+					// validate input
+					if (StringUtils.isNullOrEmpty(txtName.getText().toString()) ||
+						StringUtils.isNullOrEmpty(txtStreet.getText().toString()) ||
+						StringUtils.isNullOrEmpty(txtCity.getText().toString()) ||
+						StringUtils.isNullOrEmpty(txtState.getText().toString()) ||
+						StringUtils.isNullOrEmpty(txtZip.getText().toString()) ||
+						StringUtils.isNullOrEmpty(txtCountry.getText().toString())){
+						ShowOkDialog("Error", "All fields are required.", null);
+						return;
+					}
+							
 					SetProgressLabelText("Submitting request...", true);
 					
 					String sClassName = "com.example.spoppin.VenueRequestActivity";   
@@ -108,7 +126,7 @@ public class VenueRequestActivity extends BaseSpoppinActivity implements IGPSAct
 		progressView.setVisibility(View.INVISIBLE);
 		if (nvr != null){
 			NewVenueResponse resval = nvr.getResponse();
-			SpopPrompt(this.getString(R.string.dialog_venue_request_title)
+			ShowOkDialog(this.getString(R.string.dialog_venue_request_title)
 					, this.getString(resval.success? R.string.venue_request_submitted : R.string.venue_request_failed)
 					, new DialogInterface.OnClickListener() {
 						
@@ -159,8 +177,9 @@ public class VenueRequestActivity extends BaseSpoppinActivity implements IGPSAct
 		if (address != null){
 			PopulateAddressFields(address);
 		}else{
-			SpopPrompt(getString(R.string.loc_find_location), getString(R.string.msg_address_not_found), null);
+			ShowOkDialog(getString(R.string.loc_find_location), getString(R.string.msg_address_not_found), null);
 		}
+		gps.stopGPS();
 	}
 
 	@Override
@@ -172,29 +191,6 @@ public class VenueRequestActivity extends BaseSpoppinActivity implements IGPSAct
 	@Override
 	public void gpsEnabled(){
 
-	}
-	
-	private void SpopPrompt(String title, String message, DialogInterface.OnClickListener action){
-    	AlertDialog.Builder builder = new AlertDialog.Builder(VenueRequestActivity.this);
-    	builder.setTitle(title);
-    	builder.setMessage(message);
-    	builder.setCancelable(true);
-    	if (action == null)
-    		action = new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    dialog.cancel();
-                }
-            };
-        builder.setNeutralButton(android.R.string.ok, action);
-    	AlertDialog dialog = builder.create();
-    	dialog.show();
-    }
-	
-	private void SetProgressLabelText(String text, Boolean show){
-		if (progressView != null)
-	    	progressView.setLabelText(text);
-		if (show)
-			progressView.setVisibility(View.VISIBLE);
 	}
 
 }
