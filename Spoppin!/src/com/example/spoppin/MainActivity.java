@@ -1,13 +1,15 @@
 package com.example.spoppin;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import SpoppinObjects.Venue;
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.StrictMode;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,9 +18,21 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.Toast;
 
-public class MainActivity extends BaseSpoppinActivity {
+import com.example.spoppin.RequestsAndResponses.GetVenueListRequest;
+import com.example.spoppin.RequestsAndResponses.GetVenueListResponse;
+
+public class MainActivity extends BaseSpoppinActivity implements IGPSActivity{
 	
 	private ListView lv;
+	private GPS gps;
+	private double latitude;
+	private double longitude;
+	
+	ArrayList<BarRank> venueList = null;
+	BarRankAdapter adapter;
+	
+	// requests
+	GetVenueListRequest vlr = null;
 
 	@SuppressLint("NewApi")
 	@Override
@@ -32,29 +46,23 @@ public class MainActivity extends BaseSpoppinActivity {
             StrictMode.setThreadPolicy(policy);
         }
         
+        gps = new GPS(this);
         
-        Log.w("spoppin", "started");
+        RequestNearbyVenues(this.latitude, this.longitude);
         
-        final BarRank[] bar_rank_data = new BarRank[]{
-        		new BarRank(R.drawable.ic_launcher, "Club Z", 20, 1),
-        		new BarRank(-1, "Chasers", 23, 2),
-        		new BarRank(-1, "Bent Willy's", 115, 3)        		
-        };
+        venueList = new ArrayList<BarRank>();
         
-        BarRankAdapter adapter = new BarRankAdapter(this, R.layout.list_item, bar_rank_data);
-        
+        adapter = new BarRankAdapter(this, R.layout.list_item, venueList);
         lv = (ListView)findViewById(R.id.lstBars);
         lv.setAdapter(adapter);
         lv.setClickable(true);
         lv.setOnItemClickListener(new OnItemClickListener(){
         	
         	public void onItemClick(AdapterView<?> parent, View view, int position, long id){
-        		SpopPrompt(position, bar_rank_data[position].name);
-        		//Toast.makeText(MainActivity.this, bar_rank_data[position].name, Toast.LENGTH_LONG).show();
+        		SpopPrompt(position, venueList.get(position).name);
         	}     
         });
     }
-	
 
     
     private void SpopPrompt(int venueId, final String venueName){
@@ -111,5 +119,72 @@ public class MainActivity extends BaseSpoppinActivity {
                   return super.onOptionsItemSelected(item);
         }
     }
+    
+	public void GetVenueList_ResponseHandler(){
+		if (vlr != null){
+			venueList.clear();
+			GetVenueListResponse resval = vlr.getResponse();
+			if (resval.venues.size() > 0){
+				for(int i = 0; i < resval.venues.size(); i++){
+					Venue v = resval.venues.get(i);
+					venueList.add(new BarRank((i == 0? R.drawable.ic_launcher : -1), v.getName(), (int)v.Score().getDrinks(), i+1));
+				}
+				adapter.notifyDataSetChanged();
+			}else{
+				if (this.latitude > 0 && this.longitude > 0)
+					Toast.makeText(this, "No venues found nearby", Toast.LENGTH_LONG).show();
+			}
+		}
+	}
+	
+	private void RequestNearbyVenues(double latitude, double longitude){
+		// request venues
+        vlr = new GetVenueListRequest(this);
+        String sClassName = "com.example.spoppin.MainActivity";   
+	    Class<?> c;
+		try {
+			//TODO: Validate input
+			this.SetProgressLabelText("Updating venues...", true);
+			c = Class.forName(sClassName);
+			vlr.setResponseHandler(c.getMethod("GetVenueList_ResponseHandler"));
+			
+			// Request parameters
+			List<RequestParameter> params = new java.util.ArrayList<RequestParameter>();
+			params.add(new RequestParameter("latitude", Double.toString(latitude)));
+			params.add(new RequestParameter("longitude", Double.toString(longitude)));
+			params.add(new RequestParameter("radius", "10"));
+			
+			vlr.buildRequest(params);						
+			vlr.sendRequest();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+		} 
+	}
+
+
+	@Override
+	public void locationChanged(double longitude, double latitude) {
+		this.latitude = latitude;
+		this.longitude = longitude;
+		RequestNearbyVenues(latitude, longitude);
+		progressView.setVisibility(View.INVISIBLE);
+		gps.stopGPS();
+	}
+
+
+	@Override
+	public void gpsDisabled() {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void gpsEnabled() {
+		// TODO Auto-generated method stub
+		
+	}
     
 }

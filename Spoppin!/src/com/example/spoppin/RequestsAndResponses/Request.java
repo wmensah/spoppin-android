@@ -22,8 +22,8 @@ import org.json.JSONObject;
 
 import com.example.spoppin.APIHelper;
 import com.example.spoppin.RequestParameter;
-import com.example.spoppin.ServerResponseEnum;
 
+import SpoppinObjects.ServerResponseEnum;
 import android.app.Activity;
 import android.net.Uri;
 import android.os.AsyncTask;

@@ -1,12 +1,9 @@
 package com.example.spoppin;
 
 import java.util.List;
-import com.example.spoppin.RequestsAndResponses.NewVenueRequest;
-import com.example.spoppin.RequestsAndResponses.NewVenueResponse;
 
 import Utilities.StringUtils;
 import Utilities.UIUtils;
-import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Address;
@@ -16,6 +13,10 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.example.spoppin.RequestsAndResponses.NewVenueRequest;
+import com.example.spoppin.RequestsAndResponses.NewVenueResponse;
 
 public class VenueRequestActivity extends BaseSpoppinActivity implements IGPSActivity{
 	private double latitude;
@@ -177,7 +178,7 @@ public class VenueRequestActivity extends BaseSpoppinActivity implements IGPSAct
 		if (address != null){
 			PopulateAddressFields(address);
 		}else{
-			ShowOkDialog(getString(R.string.loc_find_location), getString(R.string.msg_address_not_found), null);
+			Toast.makeText(this, R.string.msg_address_not_found, Toast.LENGTH_LONG).show();
 		}
 		gps.stopGPS();
 	}

@@ -1,5 +1,6 @@
 package com.example.spoppin;
 
+import java.util.ArrayList;
 import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -9,16 +10,17 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public class BarRankAdapter extends ArrayAdapter<Object> {
+public class BarRankAdapter extends ArrayAdapter<BarRank> {
+
 	Context context;
 	int layoutResourceId;
-	BarRank data[] = null;
+	ArrayList<BarRank> data = null;
 	
-	public BarRankAdapter(Context context, int layoutResourceId, BarRank[] data){
-		super(context, layoutResourceId, data);
+	public BarRankAdapter(Context context, int layoutResourceId, ArrayList<BarRank> venueList){
+		super(context, layoutResourceId, venueList);
 		this.layoutResourceId = layoutResourceId;
 		this.context = context;
-		this.data = data;	
+		this.data = venueList;	
 	}
 
 	@Override
@@ -41,7 +43,7 @@ public class BarRankAdapter extends ArrayAdapter<Object> {
 			holder = (BarRankHolder)row.getTag();
 		}
 		
-		BarRank barRank = data[position];
+		BarRank barRank = data.get(position);
 		holder.lblName.setText(barRank.name);
 		holder.lblRank.setText(Integer.toString(barRank.rank));
 		holder.lblSpops.setText(Integer.toString(barRank.spops));
@@ -53,7 +55,7 @@ public class BarRankAdapter extends ArrayAdapter<Object> {
 		
 		return row;		
 	}
-	
+
 	static class BarRankHolder{
 		ImageView imgIcon;
 		TextView lblRank;

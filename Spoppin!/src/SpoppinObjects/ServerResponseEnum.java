@@ -1,4 +1,4 @@
-package com.example.spoppin;
+package SpoppinObjects;
 
 public enum ServerResponseEnum {
 	Unknown(0),

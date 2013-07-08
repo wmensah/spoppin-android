@@ -17,6 +17,6 @@
     <string name="dialog_venue_request_title">Venue Request</string>
     <string name="toast_finding_location">Finding your location...</string>
     <string name="loc_find_location">Find Location</string>
-    <string name="msg_address_not_found">Address not found. Please try again later.</string>
+    <string name="msg_address_not_found">Current address could not be determined</string>
 
 </resources>
