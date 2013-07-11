@@ -32,27 +32,37 @@ public class GetVenueListRequest extends Request {
 	protected void handleResponse(Object result) throws JSONException {
 		response = new GetVenueListResponse();
 		Response resval = (Response)result;
-		JSONObject json = new JSONObject(resval.data);
+		response.result = resval.result;
+		response.success = resval.success;
 		
-		if (resval.result == ServerResponseEnum.OK){
-			response.success = true;
+		if (resval.success){
 			
-			this.response.venues = new ArrayList<Venue>();
-			JSONArray varray = json.getJSONArray("data"); // array of venues
+			JSONObject json = new JSONObject(resval.data);
 			
-			for(int i = 0; i < varray.length(); i++){
-				Venue v = null;
-				try {
-					v = Venue.loadFromJson((JSONObject) varray.get(i));
-				} catch (ParseException e) {
-					e.printStackTrace();
+			if (resval.result == ServerResponseEnum.OK){
+				response.success = true;
+				
+				this.response.venues = new ArrayList<Venue>();
+				JSONArray varray = json.getJSONArray("data"); // array of venues
+				
+				for(int i = 0; i < varray.length(); i++){
+					Venue v = null;
+					try {
+						v = Venue.loadFromJson((JSONObject) varray.get(i));
+					} catch (ParseException e) {
+						e.printStackTrace();
+					}
+					if (v != null)
+						this.response.venues.add(v);
 				}
-				if (v != null)
-					this.response.venues.add(v);
 			}
-		}
-		else{
-			response.errorMessage = json.getString("status");
+			else{
+				response.errorMessage = json.getString("status");
+			}
+		}else{
+			response.success = false;
+			response.errorMessage = resval.errorMessage;
+			
 		}
 		super.doHandleResponse();
 	}

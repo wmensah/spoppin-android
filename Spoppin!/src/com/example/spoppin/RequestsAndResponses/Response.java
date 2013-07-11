@@ -4,7 +4,7 @@ import SpoppinObjects.ServerResponseEnum;
 
 public class Response {
 	String data;
-	ServerResponseEnum result;
+	public ServerResponseEnum result;
 	
 	public Boolean success;
 	public String errorMessage;

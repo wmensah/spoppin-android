@@ -6,10 +6,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
-import java.util.AbstractMap.SimpleEntry;
-import java.util.ArrayList;
+import java.net.SocketTimeoutException;
 import java.util.List;
-import java.util.Map.Entry;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -17,17 +15,20 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.example.spoppin.APIHelper;
-import com.example.spoppin.RequestParameter;
-
 import SpoppinObjects.ServerResponseEnum;
+import Utilities.ConnectionUtils;
 import android.app.Activity;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
+
+import com.example.spoppin.APIHelper;
+import com.example.spoppin.RequestParameter;
 
 public abstract class Request extends AsyncTask<Object, Object, Object>{
 	private Uri requestUri;
@@ -42,7 +43,7 @@ public abstract class Request extends AsyncTask<Object, Object, Object>{
 	protected abstract void handleResponse(Object result) throws JSONException;
 	public abstract void setResponseHandler(Method responseHandler);
 	
-	public boolean IsValid(){
+	public boolean RequestIsValid(){
 		if (requestUri == null || requestUri.toString().length() == 0)
 			return false;
 		return true;
@@ -50,12 +51,29 @@ public abstract class Request extends AsyncTask<Object, Object, Object>{
 	
 	@Override
 	protected Object doInBackground(Object... arg0){
+		Response resval = new Response();
+		resval.success = false;
 		
-		if (!IsValid())
+		// Validate the request
+		if (!RequestIsValid())
 			return null;
+		
+		// Check Internet connection
+		if (!ConnectionUtils.isConnected(requestingPage)){
+			resval.result = ServerResponseEnum.NotConnected;
+			return resval;
+		}
 			
 		Log.w("spoplog", "Sending request: " + requestUri.toString());
-		DefaultHttpClient   httpclient = new DefaultHttpClient(new BasicHttpParams());
+		
+		// Set HTTP parameters
+		HttpParams httpParameters = new BasicHttpParams();
+		int timeoutConnection = 3000; // 3 seconds (in miliseconds)
+		HttpConnectionParams.setConnectionTimeout(httpParameters, timeoutConnection);
+		int timeoutSocket = 5000; 
+		HttpConnectionParams.setSoTimeout(httpParameters, timeoutSocket);
+		
+		DefaultHttpClient   httpclient = new DefaultHttpClient(httpParameters);
 		HttpPost httppost = new HttpPost(this.requestUri.toString());
 		// Depends on your web service
 		httppost.setHeader("Content-type", "application/json");
@@ -63,16 +81,18 @@ public abstract class Request extends AsyncTask<Object, Object, Object>{
 		InputStream inputStream = null;
 		String result = null;
 		HttpResponse response = null;
+		
 		try {
 			response = httpclient.execute(httppost);
-		} catch (ClientProtocolException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (SocketTimeoutException e){
+			resval.result = ServerResponseEnum.RequestTimeout;
+			resval.errorMessage = e.getMessage();
+			return resval;
 		} catch (Exception e){
 			e.printStackTrace();
+			resval.result = ServerResponseEnum.Unknown;
+			resval.errorMessage = e.getMessage();
+			return resval;
 		}
 		HttpEntity entity = response.getEntity();
 
@@ -107,8 +127,9 @@ public abstract class Request extends AsyncTask<Object, Object, Object>{
 		result = sb.toString();
 		Log.w("spoplog", result);
 		
-		Response resval = new Response();
+		resval = new Response();
 		resval.data = result;
+		resval.success = true;
 		try {
 			resval.result = CheckResult(result);
 		} catch (JSONException e) {

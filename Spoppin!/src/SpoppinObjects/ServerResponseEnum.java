@@ -2,8 +2,10 @@ package SpoppinObjects;
 
 public enum ServerResponseEnum {
 	Unknown(0),
+	NotConnected(1),
 	OK(200),
-	InvalidAPIKey(201);
+	InvalidAPIKey(201),
+	RequestTimeout(408);
 	
 	private final int _value;
 

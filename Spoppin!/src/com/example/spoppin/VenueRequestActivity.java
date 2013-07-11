@@ -2,6 +2,7 @@ package com.example.spoppin;
 
 import java.util.List;
 
+import Utilities.ConnectionUtils;
 import Utilities.StringUtils;
 import Utilities.UIUtils;
 import android.content.DialogInterface;
@@ -33,6 +34,7 @@ public class VenueRequestActivity extends BaseSpoppinActivity implements IGPSAct
 	TextView txtState;
 	TextView txtZip;
 	TextView txtCountry;
+	Button btnSubmitRequest;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -63,16 +65,17 @@ public class VenueRequestActivity extends BaseSpoppinActivity implements IGPSAct
 	    txtState = (TextView)findViewById(R.id.txtState);
 	    txtZip = (TextView)findViewById(R.id.txtZip);
 	    txtCountry = (TextView)findViewById(R.id.txtCountry);
+	    btnSubmitRequest = (Button)findViewById(R.id.btnSubmitRequest);
+	    this.setEnableFields(false); // disable till geocoding is completed
 	    
 	    nvr = new NewVenueRequest(this);
-	    Button btnSubmitRequest = (Button)findViewById(R.id.btnSubmitRequest);
 	    if (btnSubmitRequest != null){
 	    	btnSubmitRequest.setOnClickListener(new OnClickListener(){
 
 				@Override
 				public void onClick(View v) {
 					// check Internet connection
-					if (!(VenueRequestActivity.this.CheckInternet())){
+					if (!(ConnectionUtils.isConnected(VenueRequestActivity.this))){
 						ShowOkDialog("Connectivity", "No internet connection", null);
 						return;
 					}
@@ -124,19 +127,27 @@ public class VenueRequestActivity extends BaseSpoppinActivity implements IGPSAct
 	}
 	
 	public void NewVenueRequest_ResponseHandler(){
-		progressView.setVisibility(View.INVISIBLE);
 		if (nvr != null){
 			NewVenueResponse resval = nvr.getResponse();
-			ShowOkDialog(this.getString(R.string.dialog_venue_request_title)
-					, this.getString(resval.success? R.string.venue_request_submitted : R.string.venue_request_failed)
-					, new DialogInterface.OnClickListener() {
-						
-						@Override
-						public void onClick(DialogInterface arg0, int arg1) {
-							VenueRequestActivity.this.finish();
-						}
-					});
+			this.HandleServerResponse(resval.result);
+			if (resval.success){
+				ShowOkDialog(this.getString(R.string.dialog_venue_request_title)
+						, this.getString(resval.success? R.string.venue_request_submitted : R.string.venue_request_failed)
+						, new DialogInterface.OnClickListener() {
+							
+							@Override
+							public void onClick(DialogInterface arg0, int arg1) {
+								VenueRequestActivity.this.finish();
+							}
+						});
+			}
+			RequestCompleted();
 		}
+	}
+	
+	private void RequestCompleted(){
+		progressView.setVisibility(View.INVISIBLE);
+		//gps.stopGPS();
 	}
 	
 	private void PopulateAddressFields(Address address){
@@ -180,7 +191,18 @@ public class VenueRequestActivity extends BaseSpoppinActivity implements IGPSAct
 		}else{
 			Toast.makeText(this, R.string.msg_address_not_found, Toast.LENGTH_LONG).show();
 		}
+		this.setEnableFields(true);
 		gps.stopGPS();
+	}
+	
+	private void setEnableFields(boolean enabled){
+		// make sure the controls have been initialized
+		txtStreet.setEnabled(enabled);
+		txtCity.setEnabled(enabled);
+		txtState.setEnabled(enabled);
+		txtZip.setEnabled(enabled);
+		txtCountry.setEnabled(enabled);
+		btnSubmitRequest.setEnabled(enabled);
 	}
 
 	@Override

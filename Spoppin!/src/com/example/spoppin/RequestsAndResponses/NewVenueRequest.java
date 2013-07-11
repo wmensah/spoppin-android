@@ -31,13 +31,22 @@ public class NewVenueRequest extends Request {
 	protected void handleResponse(Object result) throws JSONException {
 		response = new NewVenueResponse();
 		Response resval = (Response)result;
-		if (resval.result == ServerResponseEnum.OK)
-			response.success = true;
-		else{
-			JSONObject json;
-			json = new JSONObject(resval.data);
-			response.errorMessage = json.getString("status");
+		response.result = resval.result;
+		response.success = resval.success;
+
+		if (resval.success){
+			if (resval.result == ServerResponseEnum.OK)
+				response.success = true;
+			else{
+				JSONObject json;
+				json = new JSONObject(resval.data);
+				response.errorMessage = json.getString("status");
+			}
+		}else{
+			response.success = false;
+			response.errorMessage = resval.errorMessage;
 		}
+		
 		super.doHandleResponse();
 	}
 

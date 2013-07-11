@@ -1,15 +1,17 @@
 package com.example.spoppin;
 
+import SpoppinObjects.ServerResponseEnum;
+import Utilities.ConnectionUtils;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class BaseSpoppinActivity extends Activity {
 
@@ -27,7 +29,7 @@ public class BaseSpoppinActivity extends Activity {
 		
 		TextView lblConnectionStatus = (TextView)findViewById(R.id.lblConnectionStatus);
 		if (lblConnectionStatus != null)
-			lblConnectionStatus.setVisibility(CheckInternet()? View.GONE : View.VISIBLE);
+			lblConnectionStatus.setVisibility(ConnectionUtils.isConnected(this)? View.GONE : View.VISIBLE);
 	}
 	
 	@Override
@@ -35,20 +37,6 @@ public class BaseSpoppinActivity extends Activity {
 		LayoutInflater inflater = (LayoutInflater)getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		inflater.inflate(id, linBase);
     }
-	
-	protected boolean CheckInternet() 
-	{
-	    ConnectivityManager connec = (ConnectivityManager) ((Activity) this).getSystemService(Context.CONNECTIVITY_SERVICE);
-	    android.net.NetworkInfo wifi = connec.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-	    android.net.NetworkInfo mobile = connec.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
-
-	    if (wifi.isConnected()) {
-	        return true;
-	    } else if (mobile.isConnected()) {
-	        return true;
-	    }
-	    return false;
-	}
 	
 	protected void ShowOkDialog(String title, String message, DialogInterface.OnClickListener action){
     	AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -71,6 +59,26 @@ public class BaseSpoppinActivity extends Activity {
 	    	progressView.setLabelText(text);
 		if (show)
 			progressView.setVisibility(View.VISIBLE);
+	}
+	
+	protected void HandleServerResponse(ServerResponseEnum response){
+		String msg = null;
+		switch(response){
+			case OK:
+				break;
+			case RequestTimeout:
+				msg = "Request timed out";
+				break;
+			case NotConnected:
+				msg = "No Internet connection";
+				break;
+			default:
+				msg = "Unable to communicate with server";
+				break;
+		}
+		if (msg != null){
+			Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+		}
 	}
 
 }

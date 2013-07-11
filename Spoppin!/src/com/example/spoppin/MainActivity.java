@@ -3,16 +3,20 @@ package com.example.spoppin;
 import java.util.ArrayList;
 import java.util.List;
 
+import SpoppinObjects.ServerResponseEnum;
 import SpoppinObjects.Venue;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.StrictMode;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
@@ -64,11 +68,15 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity{
         });
     }
 
-    
     private void SpopPrompt(int venueId, final String venueName){
+    	// Inflate the venue_score_items layout as a view and use it in the dialog
+    	LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    	View layout = inflater.inflate(R.layout.venue_score_items, (ViewGroup) findViewById(R.id.toggleDrinks));
+    	
     	AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
     	builder.setMessage(String.format(getString(R.string.spop_prompt_message), venueName));
     	builder.setTitle(R.string.spop_prompt_title);
+    	builder.setView(layout);
     	builder.setPositiveButton(R.string.spoppin, new DialogInterface.OnClickListener() {
 			
 			@Override
@@ -119,23 +127,6 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity{
                   return super.onOptionsItemSelected(item);
         }
     }
-    
-	public void GetVenueList_ResponseHandler(){
-		if (vlr != null){
-			venueList.clear();
-			GetVenueListResponse resval = vlr.getResponse();
-			if (resval.venues.size() > 0){
-				for(int i = 0; i < resval.venues.size(); i++){
-					Venue v = resval.venues.get(i);
-					venueList.add(new BarRank((i == 0? R.drawable.ic_launcher : -1), v.getName(), (int)v.Score().getDrinks(), i+1));
-				}
-				adapter.notifyDataSetChanged();
-			}else{
-				if (this.latitude > 0 && this.longitude > 0)
-					Toast.makeText(this, "No venues found nearby", Toast.LENGTH_LONG).show();
-			}
-		}
-	}
 	
 	private void RequestNearbyVenues(double latitude, double longitude){
 		// request venues
@@ -160,17 +151,41 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity{
 			e.printStackTrace();
 		} catch (NoSuchMethodException e) {
 			e.printStackTrace();
-		} 
+		}
 	}
-
+	
+	public void GetVenueList_ResponseHandler(){
+		if (vlr != null && this.latitude != 0 && this.longitude != 0){
+			venueList.clear();
+			GetVenueListResponse resval = vlr.getResponse();
+			this.HandleServerResponse(resval.result);
+			if (resval.success){
+				if (resval.venues.size() > 0){
+					for(int i = 0; i < resval.venues.size(); i++){
+						Venue v = resval.venues.get(i);
+						venueList.add(new BarRank((i == 0? R.drawable.ic_launcher : -1), v.getName(), (int)v.Score().getDrinks(), i+1));
+					}
+					adapter.notifyDataSetChanged();
+				}else{
+					if (this.latitude != 0 && this.longitude != 0){
+						Toast.makeText(this, "No venues found nearby", Toast.LENGTH_LONG).show();
+					}
+				}
+			}
+			RequestCompleted();
+		}
+	}
+	
+	private void RequestCompleted(){
+		progressView.setVisibility(View.INVISIBLE);
+		gps.stopGPS();
+	}
 
 	@Override
 	public void locationChanged(double longitude, double latitude) {
 		this.latitude = latitude;
 		this.longitude = longitude;
 		RequestNearbyVenues(latitude, longitude);
-		progressView.setVisibility(View.INVISIBLE);
-		gps.stopGPS();
 	}
 
 
