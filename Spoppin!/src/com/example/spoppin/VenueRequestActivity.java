@@ -45,16 +45,14 @@ public class VenueRequestActivity extends BaseSpoppinActivity implements IGPSAct
 	    
 	    gps = new GPS(this);
 	    
-	    SetProgressLabelText("Finding your location...", true);
-	    
 	    Button btnLocation = (Button)findViewById(R.id.btnGetLocation);
 	    if (btnLocation != null){
 		    btnLocation.setOnClickListener(new OnClickListener(){
 	
 				@Override
 				public void onClick(View arg0) {
+					SetProgressLabelText("Finding your location...", true);	
 					gps.resumeGPS();
-					HandleLocationChanged(latitude, longitude);
 				}	    	
 		    });
 	    }
@@ -67,6 +65,13 @@ public class VenueRequestActivity extends BaseSpoppinActivity implements IGPSAct
 	    txtCountry = (TextView)findViewById(R.id.txtCountry);
 	    btnSubmitRequest = (Button)findViewById(R.id.btnSubmitRequest);
 	    this.setEnableFields(false); // disable till geocoding is completed
+	    
+	    // get extras
+	    this.latitude = this.getIntent().getExtras().getDouble("lat", 0);
+	    this.longitude = this.getIntent().getExtras().getDouble("lon", 0);
+
+	    SetProgressLabelText("Finding your location...", true);	    
+	    locationChanged(this.longitude, this.latitude);
 	    
 	    nvr = new NewVenueRequest(this);
 	    if (btnSubmitRequest != null){
@@ -129,7 +134,9 @@ public class VenueRequestActivity extends BaseSpoppinActivity implements IGPSAct
 	public void NewVenueRequest_ResponseHandler(){
 		if (nvr != null){
 			NewVenueResponse resval = nvr.getResponse();
-			this.HandleServerResponse(resval.result);
+			if (resval == null)
+				return; 
+			this.PreProcessServerResponse(resval.result);
 			if (resval.success){
 				ShowOkDialog(this.getString(R.string.dialog_venue_request_title)
 						, this.getString(resval.success? R.string.venue_request_submitted : R.string.venue_request_failed)
@@ -172,19 +179,23 @@ public class VenueRequestActivity extends BaseSpoppinActivity implements IGPSAct
 
 	@Override
 	public void locationChanged(double longitude, double latitude) {
-		if (this.latitude == 0 && this.longitude == 0){
-			this.latitude = latitude;
-			this.longitude = longitude;
-		}
-		HandleLocationChanged(latitude, longitude);
+		this.latitude = latitude;
+		this.longitude = longitude;
+		if (this.latitude != 0 && this.longitude != 0)
+			HandleLocationChanged(latitude, longitude);
 	}
 	
 	private void HandleLocationChanged(double latitude, double longitude){
 		//Geocode 
-		progressView.setVisibility(View.VISIBLE);
-		Address address = UIUtils.GeocodeCoordinates(VenueRequestActivity.this
-				, latitude
-				, longitude, 1);
+		Address address = null;
+		if (ConnectionUtils.isConnected(this)){
+			if (progressView.getVisibility() != View.VISIBLE)
+				progressView.setVisibility(View.VISIBLE);
+			address = UIUtils.GeocodeCoordinates(VenueRequestActivity.this
+					, latitude
+					, longitude, 1);
+			
+		}	
 		progressView.setVisibility(View.INVISIBLE);
 		if (address != null){
 			PopulateAddressFields(address);

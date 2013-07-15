@@ -3,13 +3,14 @@ package com.example.spoppin;
 import java.util.ArrayList;
 import java.util.List;
 
-import SpoppinObjects.ServerResponseEnum;
 import SpoppinObjects.Venue;
+import Utilities.LocationUtils;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.location.Location;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.view.LayoutInflater;
@@ -52,7 +53,9 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity{
         
         gps = new GPS(this);
         
-        RequestNearbyVenues(this.latitude, this.longitude);
+        // Get last known location
+        Location lastLocation = gps.getLastKnownLocation();
+        locationChanged(lastLocation.getLongitude(), lastLocation.getLatitude());
         
         venueList = new ArrayList<BarRank>();
         
@@ -113,6 +116,11 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity{
     	Intent i = null;
         switch(item.getItemId())
         {
+        	case R.id.menu_refresh:
+        		super.init();
+        		this.SetProgressLabelText("Loading...", true);
+        		gps.resumeGPS(); // onLocationChanged will set the venues
+        		return true;
             case R.id.menu_settings:
 			  // open settings page
 			  //i = new Intent(this, SettingsActivity.class);
@@ -121,6 +129,8 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity{
             case R.id.menu_venue_request:
 				// open venue request page
 				i = new Intent(this, VenueRequestActivity.class);
+				i.putExtra("lat", this.latitude);
+				i.putExtra("lon", this.longitude);
 				this.startActivity(i);
 				return true;
             default:
@@ -158,7 +168,9 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity{
 		if (vlr != null && this.latitude != 0 && this.longitude != 0){
 			venueList.clear();
 			GetVenueListResponse resval = vlr.getResponse();
-			this.HandleServerResponse(resval.result);
+			if (resval == null)
+				return; 
+			this.PreProcessServerResponse(resval.result);
 			if (resval.success){
 				if (resval.venues.size() > 0){
 					for(int i = 0; i < resval.venues.size(); i++){
@@ -183,9 +195,25 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity{
 
 	@Override
 	public void locationChanged(double longitude, double latitude) {
-		this.latitude = latitude;
-		this.longitude = longitude;
-		RequestNearbyVenues(latitude, longitude);
+		// New location
+		Location newloc = new Location("newlocprovider");
+		newloc.setLatitude(latitude);
+		newloc.setLongitude(longitude);
+		
+		// Current location
+		Location currloc = new Location("oldlocprovider");
+		currloc.setLatitude(this.latitude);
+		currloc.setLongitude(this.longitude);
+		
+		// Compare the two
+		if ((this.latitude == 0 && this.longitude == 0) ||
+				LocationUtils.isBetterLocation(newloc, currloc)){
+			this.latitude = latitude;
+			this.longitude = longitude;
+		}
+		
+		// Make request
+		RequestNearbyVenues(this.latitude, this.longitude);
 	}
 
 

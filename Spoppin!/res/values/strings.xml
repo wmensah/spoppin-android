@@ -18,5 +18,6 @@
     <string name="toast_finding_location">Finding your location...</string>
     <string name="loc_find_location">Find Location</string>
     <string name="msg_address_not_found">Current address could not be determined</string>
+    <string name="menu_refresh">Refresh</string>
 
 </resources>

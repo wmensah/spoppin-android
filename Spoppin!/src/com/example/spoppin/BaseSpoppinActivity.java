@@ -26,10 +26,13 @@ public class BaseSpoppinActivity extends Activity {
 		linBase = (LinearLayout)findViewById(R.id.linBase);
 		progressView = (ProgressView)findViewById(R.id.pvVenueRequest);
 		progressView.setVisibility(View.INVISIBLE); // will show when needed
-		
+		init();
+	}
+	
+	// Initialize UI elements
+	protected void init(){
 		TextView lblConnectionStatus = (TextView)findViewById(R.id.lblConnectionStatus);
-		if (lblConnectionStatus != null)
-			lblConnectionStatus.setVisibility(ConnectionUtils.isConnected(this)? View.GONE : View.VISIBLE);
+		lblConnectionStatus.setVisibility(ConnectionUtils.isConnected(this)? View.GONE : View.VISIBLE);
 	}
 	
 	@Override
@@ -61,7 +64,12 @@ public class BaseSpoppinActivity extends Activity {
 			progressView.setVisibility(View.VISIBLE);
 	}
 	
-	protected void HandleServerResponse(ServerResponseEnum response){
+	/**
+	 * Performs a number of actions common to all activities based on a response
+	 * from the server such as displaying the result message as a Toast.
+	 * @param response The response from the server
+	 */
+	protected void PreProcessServerResponse(ServerResponseEnum response){
 		String msg = null;
 		switch(response){
 			case OK:

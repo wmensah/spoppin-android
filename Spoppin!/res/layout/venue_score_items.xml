@@ -11,57 +11,51 @@
 
         <ToggleButton
             android:id="@+id/toggleDrinks"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:background="@drawable/ic_drinks"   
-	        android:layout_margin="10dp"
-	        android:textOn=""
-	        android:textOff=""
-	        android:focusable="false"
-	        android:focusableInTouchMode="false"
-	        android:layout_weight="1"
-	        android:layout_centerVertical="true" />
+            android:layout_width="48dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="@drawable/ic_drinks"
+            android:checked="false"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:textOff=""
+            android:textOn="" />
 
         <ToggleButton
             android:id="@+id/toggleMusic"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:background="@drawable/ic_music"   
-	        android:layout_margin="10dp"
-	        android:textOn=""
-	        android:textOff=""
-	        android:focusable="false"
-	        android:focusableInTouchMode="false"
-	        android:layout_weight="1"
-	        android:layout_centerVertical="true" />
-
+            android:layout_width="48dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="@drawable/ic_music"
+            android:checked="false"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:textOff=""
+            android:textOn="" />
 
         <ToggleButton
             android:id="@+id/toggleGirls"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:background="@drawable/ic_girls"   
-	        android:layout_margin="10dp"
-	        android:textOn=""
-	        android:textOff=""
-	        android:focusable="false"
-	        android:focusableInTouchMode="false"
-	        android:layout_weight="1"
-	        android:layout_centerVertical="true" />
-
+            android:layout_width="48dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="@drawable/ic_girls"
+            android:checked="false"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:textOff=""
+            android:textOn="" />
 
         <ToggleButton
             android:id="@+id/toggleGuys"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:background="@drawable/ic_guys"   
-	        android:layout_margin="10dp"
-	        android:textOn=""
-	        android:textOff=""
-	        android:focusable="false"
-	        android:focusableInTouchMode="false"
-	        android:layout_weight="1"
-	        android:layout_centerVertical="true" />
+            android:layout_width="48dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="@drawable/ic_guys"
+            android:checked="false"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:textOff=""
+            android:textOn="" />
 
     </LinearLayout>
 
