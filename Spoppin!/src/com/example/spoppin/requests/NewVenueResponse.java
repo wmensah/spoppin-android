@@ -1,4 +1,4 @@
-package com.example.spoppin.RequestsAndResponses;
+package com.example.spoppin.requests;
 
 public class NewVenueResponse extends Response {
 	

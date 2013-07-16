@@ -1,4 +1,4 @@
-package com.example.spoppin.RequestsAndResponses;
+package com.example.spoppin.requests;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -20,8 +20,6 @@ import org.apache.http.params.HttpParams;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import SpoppinObjects.ServerResponseEnum;
-import Utilities.ConnectionUtils;
 import android.app.Activity;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -29,6 +27,8 @@ import android.util.Log;
 
 import com.example.spoppin.APIHelper;
 import com.example.spoppin.RequestParameter;
+import com.example.spoppin.objects.ServerResponseEnum;
+import com.example.spoppin.utilities.ConnectionUtils;
 
 public abstract class Request extends AsyncTask<Object, Object, Object>{
 	private Uri requestUri;

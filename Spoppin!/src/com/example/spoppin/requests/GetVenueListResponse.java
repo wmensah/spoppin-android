@@ -1,8 +1,9 @@
-package com.example.spoppin.RequestsAndResponses;
+package com.example.spoppin.requests;
 
 import java.util.ArrayList;
 
-import SpoppinObjects.Venue;
+import com.example.spoppin.objects.Venue;
+
 
 public class GetVenueListResponse extends Response {
 	public ArrayList<Venue> venues;

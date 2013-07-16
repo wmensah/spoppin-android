@@ -1,6 +1,6 @@
-package com.example.spoppin.RequestsAndResponses;
+package com.example.spoppin.requests;
 
-import SpoppinObjects.ServerResponseEnum;
+import com.example.spoppin.objects.ServerResponseEnum;
 
 public class Response {
 	String data;

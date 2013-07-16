@@ -1,4 +1,4 @@
-package com.example.spoppin.RequestsAndResponses;
+package com.example.spoppin.requests;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -10,8 +10,8 @@ import org.json.JSONObject;
 
 import com.example.spoppin.APIHelper;
 import com.example.spoppin.RequestParameter;
+import com.example.spoppin.objects.ServerResponseEnum;
 
-import SpoppinObjects.ServerResponseEnum;
 import android.app.Activity;
 import android.net.Uri;
 

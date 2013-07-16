@@ -1,4 +1,4 @@
-package com.example.spoppin.RequestsAndResponses;
+package com.example.spoppin.requests;
 
 import java.lang.reflect.Method;
 import java.text.ParseException;
@@ -9,11 +9,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import SpoppinObjects.ServerResponseEnum;
-import SpoppinObjects.Venue;
 import android.app.Activity;
 
 import com.example.spoppin.RequestParameter;
+import com.example.spoppin.objects.ServerResponseEnum;
+import com.example.spoppin.objects.Venue;
 
 public class GetVenueListRequest extends Request {
 

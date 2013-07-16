@@ -1,4 +1,4 @@
-package Utilities;
+package com.example.spoppin.utilities;
 
 import java.io.IOException;
 import java.util.List;

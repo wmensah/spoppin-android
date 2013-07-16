@@ -1,4 +1,4 @@
-package SpoppinObjects;
+package com.example.spoppin.objects;
 
 public class VenueScoreInfo {
 	private double drinks;

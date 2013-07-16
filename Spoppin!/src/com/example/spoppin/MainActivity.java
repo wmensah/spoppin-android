@@ -3,9 +3,6 @@ package com.example.spoppin;
 import java.util.ArrayList;
 import java.util.List;
 
-import SpoppinObjects.Venue;
-import Utilities.LocationUtils;
-import Utilities.UIUtils;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -26,8 +23,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.spoppin.RequestsAndResponses.GetVenueListRequest;
-import com.example.spoppin.RequestsAndResponses.GetVenueListResponse;
+import com.example.spoppin.objects.Venue;
+import com.example.spoppin.requests.GetVenueListRequest;
+import com.example.spoppin.requests.GetVenueListResponse;
+import com.example.spoppin.utilities.LocationUtils;
+import com.example.spoppin.utilities.UIUtils;
 
 public class MainActivity extends BaseSpoppinActivity implements IGPSActivity{
 	

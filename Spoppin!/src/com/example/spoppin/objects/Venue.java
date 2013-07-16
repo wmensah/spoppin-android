@@ -1,4 +1,4 @@
-package SpoppinObjects;
+package com.example.spoppin.objects;
 
 import java.text.DateFormat;
 import java.text.ParseException;

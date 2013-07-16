@@ -1,4 +1,4 @@
-package Utilities;
+package com.example.spoppin.utilities;
 
 import android.content.Context;
 import android.net.ConnectivityManager;

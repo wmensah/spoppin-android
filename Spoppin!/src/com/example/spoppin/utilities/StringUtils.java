@@ -1,4 +1,4 @@
-package Utilities;
+package com.example.spoppin.utilities;
 
 public class StringUtils {
 

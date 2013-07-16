@@ -1,7 +1,8 @@
 package com.example.spoppin;
 
-import SpoppinObjects.ServerResponseEnum;
-import Utilities.ConnectionUtils;
+import com.example.spoppin.objects.ServerResponseEnum;
+import com.example.spoppin.utilities.ConnectionUtils;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
