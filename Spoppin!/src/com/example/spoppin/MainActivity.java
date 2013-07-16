@@ -5,11 +5,13 @@ import java.util.List;
 
 import SpoppinObjects.Venue;
 import Utilities.LocationUtils;
+import Utilities.UIUtils;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.location.Address;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -21,6 +23,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.spoppin.RequestsAndResponses.GetVenueListRequest;
@@ -28,7 +31,6 @@ import com.example.spoppin.RequestsAndResponses.GetVenueListResponse;
 
 public class MainActivity extends BaseSpoppinActivity implements IGPSActivity{
 	
-	private ListView lv;
 	private GPS gps;
 	private double latitude;
 	private double longitude;
@@ -38,6 +40,11 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity{
 	
 	// requests
 	GetVenueListRequest vlr = null;
+	Boolean requestPending = false;
+	
+	// controls
+	private TextView lblCurrentLocation;
+	private ListView lv;
 
 	@SuppressLint("NewApi")
 	@Override
@@ -50,6 +57,8 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity{
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(policy);
         }
+        
+        lblCurrentLocation = (TextView)findViewById(R.id.lblCurrentLocation);
         
         gps = new GPS(this);
         
@@ -118,7 +127,7 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity{
         {
         	case R.id.menu_refresh:
         		super.init();
-        		this.SetProgressLabelText("Loading...", true);
+        		this.SetProgressLabelText(getString(R.string.msg_loading), true);
         		gps.resumeGPS(); // onLocationChanged will set the venues
         		return true;
             case R.id.menu_settings:
@@ -131,6 +140,7 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity{
 				i = new Intent(this, VenueRequestActivity.class);
 				i.putExtra("lat", this.latitude);
 				i.putExtra("lon", this.longitude);
+				gps.stopGPS();
 				this.startActivity(i);
 				return true;
             default:
@@ -139,13 +149,17 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity{
     }
 	
 	private void RequestNearbyVenues(double latitude, double longitude){
+		if (requestPending)
+			return; // a request has already been made
+		
 		// request venues
+		requestPending = true;
         vlr = new GetVenueListRequest(this);
         String sClassName = "com.example.spoppin.MainActivity";   
 	    Class<?> c;
 		try {
 			//TODO: Validate input
-			this.SetProgressLabelText("Updating venues...", true);
+			this.SetProgressLabelText(getString(R.string.msg_updating_venues), true);
 			c = Class.forName(sClassName);
 			vlr.setResponseHandler(c.getMethod("GetVenueList_ResponseHandler"));
 			
@@ -166,29 +180,30 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity{
 	
 	public void GetVenueList_ResponseHandler(){
 		if (vlr != null && this.latitude != 0 && this.longitude != 0){
-			venueList.clear();
 			GetVenueListResponse resval = vlr.getResponse();
 			if (resval == null)
 				return; 
 			this.PreProcessServerResponse(resval.result);
+			RequestCompleted();
+			venueList.clear();
 			if (resval.success){
 				if (resval.venues.size() > 0){
 					for(int i = 0; i < resval.venues.size(); i++){
 						Venue v = resval.venues.get(i);
 						venueList.add(new BarRank((i == 0? R.drawable.ic_launcher : -1), v.getName(), (int)v.Score().getDrinks(), i+1));
 					}
-					adapter.notifyDataSetChanged();
+					adapter.notifyDataSetChanged();	
 				}else{
 					if (this.latitude != 0 && this.longitude != 0){
-						Toast.makeText(this, "No venues found nearby", Toast.LENGTH_LONG).show();
+						Toast.makeText(this, R.string.msg_no_venues_found, Toast.LENGTH_LONG).show();
 					}
 				}
 			}
-			RequestCompleted();
 		}
 	}
 	
 	private void RequestCompleted(){
+		requestPending = false;
 		progressView.setVisibility(View.INVISIBLE);
 		gps.stopGPS();
 	}
@@ -213,7 +228,21 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity{
 		}
 		
 		// Make request
-		RequestNearbyVenues(this.latitude, this.longitude);
+		if (this.latitude != 0 && this.longitude != 0){
+			RequestNearbyVenues(this.latitude, this.longitude);
+			
+			// Get the current address and display the city and state
+			Address address = UIUtils.GeocodeCoordinates(MainActivity.this
+					, this.latitude
+					, this.longitude, 1);
+			if (address != null){
+				this.lblCurrentLocation.setVisibility(View.VISIBLE);
+				this.lblCurrentLocation.setText(address.getLocality() + ", "
+						+ address.getAdminArea());
+			}else{
+				this.lblCurrentLocation.setVisibility(View.GONE);
+			}
+		}
 	}
 
 

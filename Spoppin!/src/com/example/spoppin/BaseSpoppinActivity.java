@@ -75,13 +75,13 @@ public class BaseSpoppinActivity extends Activity {
 			case OK:
 				break;
 			case RequestTimeout:
-				msg = "Request timed out";
+				msg = getString(R.string.msg_request_timed_out);
 				break;
 			case NotConnected:
-				msg = "No Internet connection";
+				msg = getString(R.string.msg_no_network_connection);
 				break;
 			default:
-				msg = "Unable to communicate with server";
+				msg = getString(R.string.msg_no_server_communication);
 				break;
 		}
 		if (msg != null){
