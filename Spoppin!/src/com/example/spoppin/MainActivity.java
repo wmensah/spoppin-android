@@ -22,10 +22,13 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import com.example.spoppin.objects.Venue;
 import com.example.spoppin.requests.GetVenueListRequest;
 import com.example.spoppin.requests.GetVenueListResponse;
+import com.example.spoppin.requests.VenueRankRequest;
+import com.example.spoppin.requests.VenueRankResponse;
 import com.example.spoppin.utilities.LocationUtils;
 import com.example.spoppin.utilities.UIUtils;
 
@@ -34,12 +37,16 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity{
 	private GPS gps;
 	private double latitude;
 	private double longitude;
+	private String selectedVenue;
+	private boolean isSpoppin;
 	
 	ArrayList<BarRank> venueList = null;
 	BarRankAdapter adapter;
 	
 	// requests
 	GetVenueListRequest vlr = null;
+	VenueRankRequest vrr = null;
+	
 	Boolean requestPending = false;
 	
 	// controls
@@ -75,15 +82,22 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity{
         lv.setOnItemClickListener(new OnItemClickListener(){
         	
         	public void onItemClick(AdapterView<?> parent, View view, int position, long id){
-        		SpopPrompt(position, venueList.get(position).name);
+        		SpopPrompt(venueList.get(position).venueId, venueList.get(position).name);
         	}     
         });
     }
 
-    private void SpopPrompt(int venueId, final String venueName){
+    private void SpopPrompt(final int venueId, final String venueName){
+    	selectedVenue = venueName;
+    	
     	// Inflate the venue_score_items layout as a view and use it in the dialog
     	LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-    	View layout = inflater.inflate(R.layout.venue_score_items, (ViewGroup) findViewById(R.id.toggleDrinks));
+    	final View layout = inflater.inflate(R.layout.venue_score_items, (ViewGroup) findViewById(R.id.toggleDrinks));
+    	
+    	final ToggleButton tbDrinks = (ToggleButton)layout.findViewById(R.id.toggleDrinks);
+    	final ToggleButton tbMusic = (ToggleButton)layout.findViewById(R.id.toggleMusic);
+    	final ToggleButton tbGirls = (ToggleButton)layout.findViewById(R.id.toggleGirls);
+    	final ToggleButton tbGuys = (ToggleButton)layout.findViewById(R.id.toggleGuys);
     	
     	AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
     	builder.setMessage(String.format(getString(R.string.spop_prompt_message), venueName));
@@ -92,25 +106,27 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity{
     	builder.setPositiveButton(R.string.spoppin, new DialogInterface.OnClickListener() {
 			
 			@Override
+			// spops
 			public void onClick(DialogInterface dialog, int which) {
-				ShowToast(venueName + " " + getString(R.string.spoppin).toLowerCase()+"!", true);
+				RankVenue(venueId
+						, new int[]{tbDrinks.isChecked()?1:0,tbMusic.isChecked()?1:0,tbGirls.isChecked()?1:0,tbGuys.isChecked()?1:0}
+						, true);	
 			}
 		});
     	builder.setNegativeButton(R.string.sucks, new DialogInterface.OnClickListener() {
 			
 			@Override
+			// sucks
 			public void onClick(DialogInterface dialog, int which) {
-				ShowToast(venueName + " " + getString(R.string.sucks).toLowerCase()+"!", true);
+				RankVenue(venueId
+						, new int[]{tbDrinks.isChecked()?1:0,tbMusic.isChecked()?1:0,tbGirls.isChecked()?1:0,tbGuys.isChecked()?1:0}
+						, false);
 			}
 		});
     	AlertDialog dialog = builder.create();
     	dialog.show();
     }
     
-    private void ShowToast(String message, Boolean lng){
-    	Toast.makeText(MainActivity.this, message, lng? Toast.LENGTH_LONG : Toast.LENGTH_SHORT).show();
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -147,6 +163,39 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity{
                   return super.onOptionsItemSelected(item);
         }
     }
+    
+	
+	private void RankVenue(int venueId, int[] items, boolean isSpoppin){
+		this.isSpoppin = isSpoppin;
+    	int bitsum = 0;
+    	if (items[0] == 1) { bitsum = 1; }
+    	if (items[1] == 1) { bitsum += 2; }
+    	if (items[2] == 1) { bitsum += 4; }
+    	if (items[3] == 1) { bitsum += 8; }
+    	
+    	vrr = new VenueRankRequest(this);
+    	String sClassName = "com.example.spoppin.MainActivity";
+    	Class<?> c;
+    	try{
+    		c = Class.forName(sClassName);
+			vrr.setResponseHandler(c.getMethod("VenueRank_ResponseHandler"));
+			
+			// Request parameters
+			List<RequestParameter> params = new java.util.ArrayList<RequestParameter>();
+			params.add(new RequestParameter("venue_id", String.valueOf(venueId)));
+			params.add(new RequestParameter("item_bits", String.valueOf(bitsum)));
+			params.add(new RequestParameter("spoppin", (isSpoppin? "1" : "0")));
+			
+			vrr.buildRequest(params);						
+			vrr.sendRequest();
+						
+    	} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+		}
+    }
+
 	
 	private void RequestNearbyVenues(double latitude, double longitude){
 		if (requestPending)
@@ -167,7 +216,7 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity{
 			List<RequestParameter> params = new java.util.ArrayList<RequestParameter>();
 			params.add(new RequestParameter("latitude", Double.toString(latitude)));
 			params.add(new RequestParameter("longitude", Double.toString(longitude)));
-			params.add(new RequestParameter("radius", "10"));
+			params.add(new RequestParameter("radius", "10")); //TODO: Allow user to change radius from Settings page
 			
 			vlr.buildRequest(params);						
 			vlr.sendRequest();
@@ -190,7 +239,7 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity{
 				if (resval.venues.size() > 0){
 					for(int i = 0; i < resval.venues.size(); i++){
 						Venue v = resval.venues.get(i);
-						venueList.add(new BarRank((i == 0? R.drawable.ic_launcher : -1), v.getName(), (int)v.Score().getDrinks(), i+1));
+						venueList.add(new BarRank(v.getVenueId(), (i == 0? R.drawable.ic_launcher : -1), v.getName(), v.Score(), i+1));
 					}
 					adapter.notifyDataSetChanged();	
 				}else{
@@ -198,6 +247,21 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity{
 						Toast.makeText(this, R.string.msg_no_venues_found, Toast.LENGTH_LONG).show();
 					}
 				}
+			}
+		}
+	}
+	
+	public void VenueRank_ResponseHandler(){
+		if (vrr != null){
+			VenueRankResponse resval = vrr.getResponse();
+			if (resval == null)
+				return;
+			this.PreProcessServerResponse(resval.result);
+			RequestCompleted();
+			if (resval.success){
+				this.SetProgressLabelText("Updating...", true);
+				this.RequestNearbyVenues(this.latitude, this.longitude);
+				Toast.makeText(this, selectedVenue + (this.isSpoppin? " 'spoppin!" : " sucks!"), Toast.LENGTH_LONG).show();
 			}
 		}
 	}

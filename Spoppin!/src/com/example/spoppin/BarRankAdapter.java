@@ -35,7 +35,10 @@ public class BarRankAdapter extends ArrayAdapter<BarRank> {
 			holder = new BarRankHolder();
 			holder.lblName = (TextView)row.findViewById(R.id.lblVenueName);
 			holder.lblRank = (TextView)row.findViewById(R.id.lblRank);
-			holder.lblSpops = (TextView)row.findViewById(R.id.lblSpops);
+			holder.lblDrinks = (TextView)row.findViewById(R.id.lblDrinks);
+			holder.lblMusic = (TextView)row.findViewById(R.id.lblMusic);
+			holder.lblGirls = (TextView)row.findViewById(R.id.lblGirls);
+			holder.lblGuys = (TextView)row.findViewById(R.id.lblGuys);
 			holder.imgIcon = (ImageView)row.findViewById(R.id.imgIcon);
 			
 			row.setTag(holder);			
@@ -46,7 +49,10 @@ public class BarRankAdapter extends ArrayAdapter<BarRank> {
 		BarRank barRank = data.get(position);
 		holder.lblName.setText(barRank.name);
 		holder.lblRank.setText(Integer.toString(barRank.rank));
-		holder.lblSpops.setText(Integer.toString(barRank.spops));
+		holder.lblDrinks.setText("drinks:" + Double.toString(barRank.score.getDrinks()));
+		holder.lblMusic.setText("music:" + Double.toString(barRank.score.getMusic()));
+		holder.lblGirls.setText("girls:" + Double.toString(barRank.score.getGirls()));
+		holder.lblGuys.setText("guys:" + Double.toString(barRank.score.getGuys()));
 		holder.imgIcon.setImageResource(barRank.icon);
 		
 		if (barRank.rank > 1){
@@ -60,7 +66,10 @@ public class BarRankAdapter extends ArrayAdapter<BarRank> {
 		ImageView imgIcon;
 		TextView lblRank;
 		TextView lblName;
-		TextView lblSpops;
+		TextView lblDrinks;
+		TextView lblMusic;
+		TextView lblGirls;
+		TextView lblGuys;
 	}
 	
 }

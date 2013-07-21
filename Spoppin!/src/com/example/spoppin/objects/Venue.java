@@ -14,7 +14,7 @@ import android.location.Address;
 public class Venue {
 	
 	private int venueId;
-	public int VenueId(){
+	public int getVenueId(){
 		return venueId;
 	}
 	
