@@ -1,8 +1,5 @@
 package com.example.spoppin;
 
-import com.example.spoppin.objects.ServerResponseEnum;
-import com.example.spoppin.utilities.ConnectionUtils;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -14,15 +11,20 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.spoppin.objects.ServerResponseEnum;
+import com.example.spoppin.utilities.ConnectionUtils;
+
 public class BaseSpoppinActivity extends Activity {
 
 	LinearLayout linBase;
 	ProgressView progressView;
+	MainApp context;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		super.setContentView(R.layout.activity_spoppin_base);
+		context = (MainApp)this.getApplicationContext(); 
 		
 		linBase = (LinearLayout)findViewById(R.id.linBase);
 		progressView = (ProgressView)findViewById(R.id.pvVenueRequest);

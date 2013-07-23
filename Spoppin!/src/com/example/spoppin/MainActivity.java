@@ -2,6 +2,8 @@ package com.example.spoppin;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
@@ -11,7 +13,10 @@ import android.content.Intent;
 import android.location.Address;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.os.StrictMode;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -85,7 +90,19 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity{
         		SpopPrompt(venueList.get(position).venueId, venueList.get(position).name);
         	}     
         });
+        
+        int delay = 60000;// in ms 
+
+        Timer timer = new Timer();
+
+        timer.schedule( new TimerTask(){
+           public void run() { 
+        	   mHandler.sendMessage(new Message()); // set msg.obj = "" if you need to update some text
+            }
+         }, delay, delay);
+        
     }
+	
 
     private void SpopPrompt(final int venueId, final String venueName){
     	selectedVenue = venueName;
@@ -195,7 +212,18 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity{
 			e.printStackTrace();
 		}
     }
+	
+	Handler mHandler = new Handler(new Handler.Callback() {
+        @Override
+        public boolean handleMessage(Message msg) {
+        	RefreshNearbyVenues();
+        	return true;
+        }
+	});
 
+	public void RefreshNearbyVenues(){
+		this.RequestNearbyVenues(this.latitude, this.longitude);
+	}
 	
 	private void RequestNearbyVenues(double latitude, double longitude){
 		if (requestPending)
@@ -239,7 +267,7 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity{
 				if (resval.venues.size() > 0){
 					for(int i = 0; i < resval.venues.size(); i++){
 						Venue v = resval.venues.get(i);
-						venueList.add(new BarRank(v.getVenueId(), (i == 0? R.drawable.ic_launcher : -1), v.getName(), v.Score(), i+1));
+						venueList.add(new BarRank(v.getVenueId(), (i == 0? R.drawable.star : -1), v.getName(), v.Score(), i+1));
 					}
 					adapter.notifyDataSetChanged();	
 				}else{
@@ -259,8 +287,7 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity{
 			this.PreProcessServerResponse(resval.result);
 			RequestCompleted();
 			if (resval.success){
-				this.SetProgressLabelText("Updating...", true);
-				this.RequestNearbyVenues(this.latitude, this.longitude);
+				this.RefreshNearbyVenues();
 				Toast.makeText(this, selectedVenue + (this.isSpoppin? " 'spoppin!" : " sucks!"), Toast.LENGTH_LONG).show();
 			}
 		}
@@ -287,6 +314,9 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity{
 		// Compare the two
 		if ((this.latitude == 0 && this.longitude == 0) ||
 				LocationUtils.isBetterLocation(newloc, currloc)){
+			Log.d(context.getLogKey()
+				, String.format("Found better location. Old:(lat:%s, lon:%s), New:(lat:%s, lon:%s)"
+						, this.latitude, this.longitude, latitude, longitude));
 			this.latitude = latitude;
 			this.longitude = longitude;
 		}
@@ -300,6 +330,7 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity{
 					, this.latitude
 					, this.longitude, 1);
 			if (address != null){
+				Log.d(context.getLogKey(), "Location address found: " + address.getLocality() + "," + address.getAdminArea());
 				this.lblCurrentLocation.setVisibility(View.VISIBLE);
 				this.lblCurrentLocation.setText(address.getLocality() + ", "
 						+ address.getAdminArea());
