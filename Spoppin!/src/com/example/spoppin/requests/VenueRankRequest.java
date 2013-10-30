@@ -21,7 +21,7 @@ public class VenueRankRequest extends Request {
 
 	@Override
 	public void buildRequest(List<RequestParameter> params) {
-		super.buildRequest("venuerank", params);	
+		super.buildRequest("rankvenue", params);	
 	}
 
 	@Override

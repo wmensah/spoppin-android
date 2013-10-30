@@ -156,7 +156,7 @@ public abstract class Request extends AsyncTask<Object, Object, Object>{
 		String status = json.get("status").toString();
 		String request = (String) json.get("request").toString();
 		
-		if (this.requestUri.getQueryParameter("request").equals(request) &&
+		if ((this.requestUri.toString().indexOf(request) > 0) &&
 				status.equals("200")){
 			return ServerResponseEnum.OK;
 		}
@@ -179,11 +179,12 @@ public abstract class Request extends AsyncTask<Object, Object, Object>{
 	
 	protected void buildRequest(String request, List<RequestParameter> params){
 		Uri.Builder b = Uri.parse(APIHelper.getWebserviceUrl()).buildUpon();
-		b.appendQueryParameter("request",request);
+		b.appendPath(request);
 		
 		// Append the parameters
 		for (int i = 0; i < params.size(); i++){
-			b.appendQueryParameter(params.get(i).Key, params.get(i).Value);
+			b.appendPath(params.get(i).Key);
+			b.appendPath(params.get(i).Value);
 		}
 		
 		requestUri = b.build();

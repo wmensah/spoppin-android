@@ -25,7 +25,7 @@ public class GetVenueListRequest extends Request {
 
 	@Override
 	public void buildRequest(List<RequestParameter> params) {
-		super.buildRequest("getvenuelist", params);	
+		super.buildRequest("getvenues", params);	
 	}
 
 	@Override

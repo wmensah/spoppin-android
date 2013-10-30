@@ -112,7 +112,7 @@ public class VenueRequestActivity extends BaseSpoppinActivity implements IGPSAct
 						params.add(new RequestParameter("city", txtCity.getText().toString()));
 						params.add(new RequestParameter("state", txtState.getText().toString()));
 						params.add(new RequestParameter("zip", txtZip.getText().toString()));
-						params.add(new RequestParameter("country", txtCountry.getText().toString()));
+						params.add(new RequestParameter("country_id", txtCountry.getText().toString()));
 						params.add(new RequestParameter("latitude", Double.toString(latitude)));
 						params.add(new RequestParameter("longitude", Double.toString(longitude)));
 						

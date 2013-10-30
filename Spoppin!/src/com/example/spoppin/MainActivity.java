@@ -184,11 +184,6 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity{
 	
 	private void RankVenue(int venueId, int[] items, boolean isSpoppin){
 		this.isSpoppin = isSpoppin;
-    	int bitsum = 0;
-    	if (items[0] == 1) { bitsum = 1; }
-    	if (items[1] == 1) { bitsum += 2; }
-    	if (items[2] == 1) { bitsum += 4; }
-    	if (items[3] == 1) { bitsum += 8; }
     	
     	vrr = new VenueRankRequest(this);
     	String sClassName = "com.example.spoppin.MainActivity";
@@ -200,7 +195,10 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity{
 			// Request parameters
 			List<RequestParameter> params = new java.util.ArrayList<RequestParameter>();
 			params.add(new RequestParameter("venue_id", String.valueOf(venueId)));
-			params.add(new RequestParameter("item_bits", String.valueOf(bitsum)));
+			params.add(new RequestParameter("drinks", String.valueOf(items[0])));
+			params.add(new RequestParameter("music", String.valueOf(items[1])));
+			params.add(new RequestParameter("girls",String.valueOf(items[2])));
+			params.add(new RequestParameter("guys", String.valueOf(items[3])));
 			params.add(new RequestParameter("spoppin", (isSpoppin? "1" : "0")));
 			
 			vrr.buildRequest(params);						
@@ -245,6 +243,7 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity{
 			params.add(new RequestParameter("latitude", Double.toString(latitude)));
 			params.add(new RequestParameter("longitude", Double.toString(longitude)));
 			params.add(new RequestParameter("radius", "10")); //TODO: Allow user to change radius from Settings page
+			params.add(new RequestParameter("authorized", "0"));
 			
 			vlr.buildRequest(params);						
 			vlr.sendRequest();
@@ -310,6 +309,9 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity{
 		Location currloc = new Location("oldlocprovider");
 		currloc.setLatitude(this.latitude);
 		currloc.setLongitude(this.longitude);
+		
+		if (newloc.distanceTo(currloc) < 10)
+			return;
 		
 		// Compare the two
 		if ((this.latitude == 0 && this.longitude == 0) ||
