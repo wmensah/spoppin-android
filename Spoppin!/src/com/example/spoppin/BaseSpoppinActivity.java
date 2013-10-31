@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -21,6 +22,7 @@ public class BaseSpoppinActivity extends ActionBarActivity {
 	LinearLayout linBase;
 	ProgressView progressView;
 	MainApp context;
+	SlidingMenu menu;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -32,7 +34,7 @@ public class BaseSpoppinActivity extends ActionBarActivity {
 		progressView = (ProgressView)findViewById(R.id.pvVenueRequest);
 		progressView.setVisibility(View.INVISIBLE); // will show when needed
 		
-		SlidingMenu menu = new SlidingMenu(this);
+		menu = new SlidingMenu(this);
         menu.setMode(SlidingMenu.LEFT);
         menu.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
         menu.setShadowWidthRes(R.dimen.shadow_width);
@@ -43,6 +45,26 @@ public class BaseSpoppinActivity extends ActionBarActivity {
         menu.setMenu(R.layout.menu);
         
 		init();
+	}
+	
+	@Override
+	public void onBackPressed() {
+	    if (menu.isMenuShowing()) {
+	        menu.showContent(true);
+	        return;
+	    }
+
+	    super.onBackPressed();
+	}
+	
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+	    if ( keyCode == KeyEvent.KEYCODE_MENU ) {
+	    	if (!menu.isMenuShowing()) {
+		        menu.showMenu(true);
+		    }
+	    }
+	    return super.onKeyDown(keyCode, event);
 	}
 	
 	// Initialize UI elements

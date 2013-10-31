@@ -3,12 +3,15 @@ package com.example.spoppin;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class MenuListFragment extends ListFragment{
 	
@@ -19,11 +22,19 @@ public class MenuListFragment extends ListFragment{
 	public void onActivityCreated(Bundle savedInstanceState) {
 	        super.onActivityCreated(savedInstanceState);
 	        SampleAdapter adapter = new SampleAdapter(getActivity());
-	        for (int i = 0; i < 20; i++) {
-	                adapter.add(new SampleItem("Sample List", android.R.drawable.ic_menu_search));
-	        }
+	        
+	        adapter.add(new SampleItem("Map", R.drawable.ic_action_place));
+	        adapter.add(new SampleItem("Settings", R.drawable.ic_action_settings));
+	        
 	        setListAdapter(adapter);
 	}
+	
+	@Override
+    public void onListItemClick(ListView l, View v, int position, long id) {
+ 
+        /** Invokes the implementation of the method onListFragmentItemClick in the hosting activity */
+        Log.i("info", String.valueOf(id));
+    }
 
 	private class SampleItem {
 	        public String tag;

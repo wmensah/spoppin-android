@@ -160,23 +160,10 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity{
     	Intent i = null;
         switch(item.getItemId())
         {
-        	case R.id.menu_refresh:
-        		super.init();
-        		this.SetProgressLabelText(getString(R.string.msg_loading), true);
-        		gps.resumeGPS(); // onLocationChanged will set the venues
-        		return true;
-            case R.id.menu_settings:
-			  // open settings page
-			  //i = new Intent(this, SettingsActivity.class);
-			  //this.startActivity(i);
-			  return true;
-            case R.id.menu_venue_request:
-				// open venue request page
-				i = new Intent(this, VenueRequestActivity.class);
-				i.putExtra("lat", this.latitude);
-				i.putExtra("lon", this.longitude);
-				gps.stopGPS();
-				this.startActivity(i);
+	    	case R.id.action_refresh:
+				super.init();
+				this.SetProgressLabelText(getString(R.string.msg_loading), true);
+				gps.resumeGPS(); // onLocationChanged will set the venues
 				return true;
             case R.id.action_search:
             	return true;
