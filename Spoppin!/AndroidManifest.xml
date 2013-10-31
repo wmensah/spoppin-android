@@ -19,7 +19,8 @@
         android:theme="@style/AppTheme" >
         <activity
             android:name="com.example.spoppin.MainActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name"
+            android:theme="@style/Theme.AppCompat.Light" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -27,7 +28,14 @@
             </intent-filter>
         </activity>
         <activity android:name="SettingsActivity"></activity>
-        <activity android:name="com.example.spoppin.VenueRequestActivity"></activity>
+        <activity 
+            android:name="com.example.spoppin.VenueRequestActivity"
+            android:theme="@style/Theme.AppCompat.Light">
+            <!-- Parent activity meta-data to support API level 7+ -->
+	        <meta-data
+	            android:name="android.support.PARENT_ACTIVITY"
+	            android:value="com.example.spoppin.MainActivity" />
+        </activity>
             
             
     </application>

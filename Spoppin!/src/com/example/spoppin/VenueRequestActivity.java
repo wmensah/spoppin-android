@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.location.Address;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.v7.app.ActionBar;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -42,6 +43,10 @@ public class VenueRequestActivity extends BaseSpoppinActivity implements IGPSAct
 	    super.onCreate(savedInstanceState);
 	
 	    setContentView(R.layout.activity_venue_request);
+	    
+	    // allow navigating up with the app icon
+	    ActionBar actionBar = getSupportActionBar();
+	    actionBar.setDisplayHomeAsUpEnabled(true);
 	    
 	    gps = new GPS(this);
 	    

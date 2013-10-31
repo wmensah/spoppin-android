@@ -25,5 +25,7 @@
     <string name="msg_no_venues_found">No venues found nearby</string>
     <string name="msg_updating_venues">Updating venues...</string>
     <string name="msg_loading">Loading...</string>
+    <string name="action_search">Search</string>
+    <string name="action_new">New</string>
 
 </resources>

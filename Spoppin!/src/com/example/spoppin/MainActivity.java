@@ -148,9 +148,11 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity{
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.activity_main, menu);
+        getMenuInflater().inflate(R.menu.main_activity_actions, menu); // ActionBar menu items
+        
         //menu.add(0, MENU_REQUEST_VENUE, Menu.NONE, R.string.menu_venue_request);
         //menu.add(Menu.NONE, MENU_DELETE, Menu.NONE, "Delete");
-        return true;
+        return super.onCreateOptionsMenu(menu);
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
@@ -176,6 +178,16 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity{
 				gps.stopGPS();
 				this.startActivity(i);
 				return true;
+            case R.id.action_search:
+            	return true;
+            case R.id.action_new:
+				// open venue request page
+				i = new Intent(this, VenueRequestActivity.class);
+				i.putExtra("lat", this.latitude);
+				i.putExtra("lon", this.longitude);
+				gps.stopGPS();
+				this.startActivity(i);
+            	return true;
             default:
                   return super.onOptionsItemSelected(item);
         }
@@ -310,8 +322,8 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity{
 		currloc.setLatitude(this.latitude);
 		currloc.setLongitude(this.longitude);
 		
-		if (newloc.distanceTo(currloc) < 10)
-			return;
+		//if (newloc.distanceTo(currloc) < 10)
+			//return;
 		
 		// Compare the two
 		if ((this.latitude == 0 && this.longitude == 0) ||

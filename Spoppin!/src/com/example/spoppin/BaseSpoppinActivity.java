@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -14,7 +15,7 @@ import android.widget.Toast;
 import com.example.spoppin.objects.ServerResponseEnum;
 import com.example.spoppin.utilities.ConnectionUtils;
 
-public class BaseSpoppinActivity extends Activity {
+public class BaseSpoppinActivity extends ActionBarActivity {
 
 	LinearLayout linBase;
 	ProgressView progressView;
