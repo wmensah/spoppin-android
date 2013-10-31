@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.example.spoppin.objects.ServerResponseEnum;
 import com.example.spoppin.utilities.ConnectionUtils;
+import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 
 public class BaseSpoppinActivity extends ActionBarActivity {
 
@@ -30,6 +31,17 @@ public class BaseSpoppinActivity extends ActionBarActivity {
 		linBase = (LinearLayout)findViewById(R.id.linBase);
 		progressView = (ProgressView)findViewById(R.id.pvVenueRequest);
 		progressView.setVisibility(View.INVISIBLE); // will show when needed
+		
+		SlidingMenu menu = new SlidingMenu(this);
+        menu.setMode(SlidingMenu.LEFT);
+        menu.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
+        menu.setShadowWidthRes(R.dimen.shadow_width);
+        menu.setShadowDrawable(R.drawable.shadow);
+        menu.setBehindOffsetRes(R.dimen.slidingmenu_offset);
+        menu.setFadeDegree(0.35f);
+        menu.attachToActivity(this, SlidingMenu.SLIDING_CONTENT);
+        menu.setMenu(R.layout.menu);
+        
 		init();
 	}
 	
