@@ -36,6 +36,7 @@
 	            android:name="android.support.PARENT_ACTIVITY"
 	            android:value="com.example.spoppin.MainActivity" />
         </activity>
+        <activity android:name="SearchActivity" android:theme="@style/Theme.AppCompat.Light"></activity>
             
             
     </application>

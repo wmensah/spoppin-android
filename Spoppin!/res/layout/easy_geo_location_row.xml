@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical"
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent">
+        <TextView
+                android:id="@+id/easy_geo_location_name_text_view"
+		        android:textSize="16sp"
+		        android:textStyle="bold"
+		        android:textColor="#000"
+		        android:layout_width="fill_parent"
+		        android:layout_height="wrap_content"
+		        android:gravity="center_vertical"
+		        android:textColorHighlight="#fff"
+		        android:padding="10dp"
+		        android:text="test"
+        />
+</LinearLayout>

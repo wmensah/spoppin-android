@@ -74,9 +74,21 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity{
         
         gps = new GPS(this);
         
-        // Get last known location
-        Location lastLocation = gps.getLastKnownLocation();
-        locationChanged(lastLocation.getLongitude(), lastLocation.getLatitude());
+        // Set location either passed to activity or last known location
+        Location loc = new Location("newlocprovider");
+        
+        if (this.getIntent().getExtras() != null){
+        	this.latitude = this.getIntent().getExtras().getDouble("lat", 0);
+        	this.longitude = this.getIntent().getExtras().getDouble("lon", 0);
+        	
+        	if (this.latitude > 0 && this.longitude > 0){
+    			loc.setLatitude(this.latitude);
+    			loc.setLongitude(this.longitude);
+    	    }
+        }else{
+        	loc = gps.getLastKnownLocation();
+        }
+	    locationChanged(loc.getLongitude(), loc.getLatitude());
         
         venueList = new ArrayList<BarRank>();
         
@@ -158,26 +170,27 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity{
     public boolean onOptionsItemSelected(MenuItem item)
     {
     	Intent i = null;
-        switch(item.getItemId())
-        {
-	    	case R.id.action_refresh:
-				super.init();
-				this.SetProgressLabelText(getString(R.string.msg_loading), true);
-				gps.resumeGPS(); // onLocationChanged will set the venues
-				return true;
-            case R.id.action_search:
-            	return true;
-            case R.id.action_new:
-				// open venue request page
-				i = new Intent(this, VenueRequestActivity.class);
-				i.putExtra("lat", this.latitude);
-				i.putExtra("lon", this.longitude);
-				gps.stopGPS();
-				this.startActivity(i);
-            	return true;
-            default:
-                  return super.onOptionsItemSelected(item);
-        }
+        if (item.getItemId() == R.id.action_refresh) {
+			super.init();
+			this.SetProgressLabelText(getString(R.string.msg_loading), true);
+			gps.resumeGPS(); // onLocationChanged will set the venues
+			return true;
+		} else if (item.getItemId() == R.id.action_search) {
+			// open venue request page
+			i = new Intent(this, SearchActivity.class);
+			this.startActivity(i);
+			return true;
+		} else if (item.getItemId() == R.id.action_new) {
+			// open venue request page
+			i = new Intent(this, VenueRequestActivity.class);
+			i.putExtra("lat", this.latitude);
+			i.putExtra("lon", this.longitude);
+			gps.stopGPS();
+			this.startActivity(i);
+			return true;
+		} else {
+			return super.onOptionsItemSelected(item);
+		}
     }
     
 	
@@ -308,6 +321,7 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity{
 		Location currloc = new Location("oldlocprovider");
 		currloc.setLatitude(this.latitude);
 		currloc.setLongitude(this.longitude);
+	
 		
 		//if (newloc.distanceTo(currloc) < 10)
 			//return;
