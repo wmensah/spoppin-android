@@ -19,36 +19,20 @@
         android:id="@+id/textView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Request a Venue"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:paddingBottom="10dp"
+        android:text="Please enter the name of your current location. Once your request has been recieved, it will be reviewed and added if the same venue has been requested by at least 5 other users." />
 
     <EditText
         android:id="@+id/txtName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:hint="Name" >
+        android:hint="Enter Name" >
 
         <requestFocus />
     </EditText>
-
-
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:orientation="vertical" >
-
-        <Button
-            android:id="@+id/btnGetLocation"
-            style="?android:attr/buttonStyleSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:enabled="true"
-            android:text="@string/str_use_my_location" />
-
-    </LinearLayout>
 
     <EditText
         android:id="@+id/txtStreet"
@@ -100,7 +84,5 @@
     </LinearLayout>
         </LinearLayout>
     </ScrollView>
-
-    
 
 </LinearLayout>

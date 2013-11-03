@@ -1,28 +1,30 @@
 package com.example.spoppin;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.spoppin.objects.PreferencesManager;
 import com.example.spoppin.objects.ServerResponseEnum;
 import com.example.spoppin.utilities.ConnectionUtils;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 
 public class BaseSpoppinActivity extends ActionBarActivity {
 
-	LinearLayout linBase;
+	RelativeLayout linBase;
 	ProgressView progressView;
 	MainApp context;
 	SlidingMenu menu;
+	PreferencesManager pm;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -30,9 +32,11 @@ public class BaseSpoppinActivity extends ActionBarActivity {
 		super.setContentView(R.layout.activity_spoppin_base);
 		context = (MainApp)this.getApplicationContext(); 
 		
-		linBase = (LinearLayout)findViewById(R.id.linBase);
+		linBase = (RelativeLayout)findViewById(R.id.linBase);
 		progressView = (ProgressView)findViewById(R.id.pvVenueRequest);
 		progressView.setVisibility(View.INVISIBLE); // will show when needed
+		
+		pm = new PreferencesManager(context);
 		
 		menu = new SlidingMenu(this);
         menu.setMode(SlidingMenu.LEFT);
@@ -43,9 +47,11 @@ public class BaseSpoppinActivity extends ActionBarActivity {
         menu.setFadeDegree(0.35f);
         menu.attachToActivity(this, SlidingMenu.SLIDING_CONTENT);
         menu.setMenu(R.layout.menu);
+        menu.setBackgroundColor(Color.parseColor("#6A287E"));
         
 		init();
 	}
+	
 	
 	@Override
 	public void onBackPressed() {

@@ -13,20 +13,33 @@
         android:text="No Internet connection..."
         android:textColor="@android:color/white" />
     
-    <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" >
-
-            <com.example.spoppin.ProgressView
+    <!-- Header aligned to top -->
+    <RelativeLayout
+    android:id="@+id/header"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_alignParentTop="true"
+    android:gravity="center">
+    
+    <com.example.spoppin.ProgressView
                 android:id="@+id/pvVenueRequest"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" >
             </com.example.spoppin.ProgressView>
-            </LinearLayout>
-            
-    <LinearLayout android:id="@+id/linBase"
-         android:layout_width="fill_parent"
-         android:layout_height="fill_parent" >
-       </LinearLayout> 
+  </RelativeLayout>
+    
+  
+  <!-- Content below header and above footer -->
+  <RelativeLayout android:id="@+id/linBase"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_below="@id/header"
+    android:gravity="center">
+    
+
+  </RelativeLayout>
+    
+
+           
 
 </LinearLayout>

@@ -8,6 +8,8 @@ import android.location.Address;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v7.app.ActionBar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -47,20 +49,9 @@ public class VenueRequestActivity extends BaseSpoppinActivity implements IGPSAct
 	    // allow navigating up with the app icon
 	    ActionBar actionBar = getSupportActionBar();
 	    actionBar.setDisplayHomeAsUpEnabled(true);
+	    actionBar.setTitle("Venue Request");
 	    
 	    gps = new GPS(this);
-	    
-	    Button btnLocation = (Button)findViewById(R.id.btnGetLocation);
-	    if (btnLocation != null){
-		    btnLocation.setOnClickListener(new OnClickListener(){
-	
-				@Override
-				public void onClick(View arg0) {
-					SetProgressLabelText("Finding your location...", true);	
-					gps.resumeGPS();
-				}	    	
-		    });
-	    }
 	    
 	    txtName = (TextView)findViewById(R.id.txtName);
 	    txtStreet = (TextView)findViewById(R.id.txtStreet);
@@ -135,6 +126,24 @@ public class VenueRequestActivity extends BaseSpoppinActivity implements IGPSAct
 	    	
 	    }
 	}
+	
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.venue_request_activity_actions, menu); // ActionBar menu items
+        return super.onCreateOptionsMenu(menu);
+    }
+    
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        if (item.getItemId() == R.id.action_use_my_location) {
+        	SetProgressLabelText("Finding your location...", true);	
+			gps.resumeGPS();
+			return true;
+		} else {
+			return super.onOptionsItemSelected(item);
+		}
+    }
 	
 	public void NewVenueRequest_ResponseHandler(){
 		if (nvr != null){

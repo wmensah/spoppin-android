@@ -40,10 +40,14 @@ import com.example.spoppin.utilities.UIUtils;
 public class MainActivity extends BaseSpoppinActivity implements IGPSActivity{
 	
 	private GPS gps;
-	private double latitude;
-	private double longitude;
+	//private double latitude;
+	//private double longitude;
 	private String selectedVenue;
 	private boolean isSpoppin;
+	
+	public static final int REQUEST_CODE_LOCATION_SEARCH = 1;
+	public static final int RESULT_CODE_USE_GIVEN_LOCATION = 1;
+	public static final int RESULT_CODE_USE_USER_LOCATION = 2;
 	
 	ArrayList<BarRank> venueList = null;
 	BarRankAdapter adapter;
@@ -74,34 +78,7 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity{
         
         gps = new GPS(this);
         
-        // Set location either passed to activity or last known location
-        Location loc = new Location("newlocprovider");
-        
-        if (this.getIntent().getExtras() != null){
-        	this.latitude = this.getIntent().getExtras().getDouble("lat", 0);
-        	this.longitude = this.getIntent().getExtras().getDouble("lon", 0);
-        	
-        	if (this.latitude > 0 && this.longitude > 0){
-    			loc.setLatitude(this.latitude);
-    			loc.setLongitude(this.longitude);
-    	    }
-        }else{
-        	loc = gps.getLastKnownLocation();
-        }
-	    locationChanged(loc.getLongitude(), loc.getLatitude());
-        
-        venueList = new ArrayList<BarRank>();
-        
-        adapter = new BarRankAdapter(this, R.layout.list_item, venueList);
-        lv = (ListView)findViewById(R.id.lstBars);
-        lv.setAdapter(adapter);
-        lv.setClickable(true);
-        lv.setOnItemClickListener(new OnItemClickListener(){
-        	
-        	public void onItemClick(AdapterView<?> parent, View view, int position, long id){
-        		SpopPrompt(venueList.get(position).venueId, venueList.get(position).name);
-        	}     
-        });
+        GetVenuesBasedOnIntentLocation(this.getIntent());
         
         int delay = 60000;// in ms 
 
@@ -114,6 +91,45 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity{
          }, delay, delay);
         
     }
+	
+	private void GetVenuesBasedOnIntentLocation(Intent i){
+		// Set location either passed to activity or last known location
+        Location loc = new Location("newlocprovider");
+        
+        Boolean useCurrentLoc = true;
+        
+        if (i.getExtras() != null){
+        	pm.setLocation(i.getExtras().getDouble("lat", 0)
+        			, i.getExtras().getDouble("lon", 0));
+        	
+        	if (pm.getLocation() != null){
+        		loc = pm.getLocation();
+    			useCurrentLoc = false;
+    	    }
+        }
+        if (useCurrentLoc){
+        	// see if there was location saved in preferences
+        	loc = pm.getLocation();
+        	if (loc == null){
+        		loc = gps.getLastKnownLocation();
+        		pm.setLocation(loc);
+        	}
+        }
+	    locationChanged(loc.getLongitude(), loc.getLatitude());
+	    
+	    venueList = new ArrayList<BarRank>();
+        
+        adapter = new BarRankAdapter(this, R.layout.list_item, venueList);
+        lv = (ListView)findViewById(R.id.lstBars);
+        lv.setAdapter(adapter);
+        lv.setClickable(true);
+        lv.setOnItemClickListener(new OnItemClickListener(){
+        	
+        	public void onItemClick(AdapterView<?> parent, View view, int position, long id){
+        		SpopPrompt(venueList.get(position).venueId, venueList.get(position).name);
+        	}     
+        });
+	}
 	
 
     private void SpopPrompt(final int venueId, final String venueName){
@@ -159,13 +175,10 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity{
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.activity_main, menu);
-        getMenuInflater().inflate(R.menu.main_activity_actions, menu); // ActionBar menu items
-        
-        //menu.add(0, MENU_REQUEST_VENUE, Menu.NONE, R.string.menu_venue_request);
-        //menu.add(Menu.NONE, MENU_DELETE, Menu.NONE, "Delete");
+        getMenuInflater().inflate(R.menu.main_activity_actions, menu);
         return super.onCreateOptionsMenu(menu);
     }
+    
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
@@ -178,19 +191,39 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity{
 		} else if (item.getItemId() == R.id.action_search) {
 			// open venue request page
 			i = new Intent(this, SearchActivity.class);
-			this.startActivity(i);
+			this.startActivityForResult(i, REQUEST_CODE_LOCATION_SEARCH);
 			return true;
 		} else if (item.getItemId() == R.id.action_new) {
 			// open venue request page
 			i = new Intent(this, VenueRequestActivity.class);
-			i.putExtra("lat", this.latitude);
-			i.putExtra("lon", this.longitude);
+			i.putExtra("lat", pm.getLatitude());
+			i.putExtra("lon", pm.getLongitude());
 			gps.stopGPS();
 			this.startActivity(i);
 			return true;
 		} else {
 			return super.onOptionsItemSelected(item);
 		}
+    }
+    
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent i)
+    {
+    	if (requestCode == REQUEST_CODE_LOCATION_SEARCH && resultCode == RESULT_OK && i != null){
+	        if (i.getExtras() != null) {
+	        	if (i.getIntExtra("loc_option", 2) == 1){
+	        		// use given location
+	        		GetVenuesBasedOnIntentLocation(i);
+	        		return;
+	        	}
+	        	else if (i.getIntExtra("loc_option", 1) == 2){
+	        		// use user's current location
+	        		pm.resetLocation(); // so cached location is not used.
+		            Intent it = new Intent(this, MainActivity.class); 
+		            GetVenuesBasedOnIntentLocation(it);
+	        	}	        	
+	        }
+    	}
     }
     
 	
@@ -232,7 +265,7 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity{
 	});
 
 	public void RefreshNearbyVenues(){
-		this.RequestNearbyVenues(this.latitude, this.longitude);
+		this.RequestNearbyVenues(pm.getLatitude(), pm.getLongitude());
 	}
 	
 	private void RequestNearbyVenues(double latitude, double longitude){
@@ -267,7 +300,7 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity{
 	}
 	
 	public void GetVenueList_ResponseHandler(){
-		if (vlr != null && this.latitude != 0 && this.longitude != 0){
+		if (vlr != null && pm.getLocation() != null){
 			GetVenueListResponse resval = vlr.getResponse();
 			if (resval == null)
 				return; 
@@ -282,9 +315,7 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity{
 					}
 					adapter.notifyDataSetChanged();	
 				}else{
-					if (this.latitude != 0 && this.longitude != 0){
-						Toast.makeText(this, R.string.msg_no_venues_found, Toast.LENGTH_LONG).show();
-					}
+					Toast.makeText(this, R.string.msg_no_venues_found, Toast.LENGTH_LONG).show();
 				}
 			}
 		}
@@ -318,32 +349,28 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity{
 		newloc.setLongitude(longitude);
 		
 		// Current location
-		Location currloc = new Location("oldlocprovider");
-		currloc.setLatitude(this.latitude);
-		currloc.setLongitude(this.longitude);
-	
+		Location currloc = pm.getLocation();
 		
 		//if (newloc.distanceTo(currloc) < 10)
 			//return;
 		
 		// Compare the two
-		if ((this.latitude == 0 && this.longitude == 0) ||
+		if ((pm.getLocation() == null) ||
 				LocationUtils.isBetterLocation(newloc, currloc)){
 			Log.d(context.getLogKey()
 				, String.format("Found better location. Old:(lat:%s, lon:%s), New:(lat:%s, lon:%s)"
-						, this.latitude, this.longitude, latitude, longitude));
-			this.latitude = latitude;
-			this.longitude = longitude;
+						, pm.getLatitude(), pm.getLongitude(), latitude, longitude));
+			pm.setLocation(newloc);
 		}
 		
 		// Make request
-		if (this.latitude != 0 && this.longitude != 0){
-			RequestNearbyVenues(this.latitude, this.longitude);
+		if (pm.getLocation() != null){
+			RequestNearbyVenues(pm.getLatitude(), pm.getLongitude());
 			
 			// Get the current address and display the city and state
 			Address address = UIUtils.GeocodeCoordinates(MainActivity.this
-					, this.latitude
-					, this.longitude, 1);
+					, pm.getLatitude()
+					, pm.getLongitude(), 1);
 			if (address != null){
 				Log.d(context.getLogKey(), "Location address found: " + address.getLocality() + "," + address.getAdminArea());
 				this.lblCurrentLocation.setVisibility(View.VISIBLE);
