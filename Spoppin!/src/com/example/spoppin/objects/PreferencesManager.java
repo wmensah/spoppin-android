@@ -49,4 +49,14 @@ public class PreferencesManager {
 		editor.remove("longitude");
 		editor.commit();
 	}
+	
+	public void saveUserPreferences(UserPreference pref){
+		editor = preferences.edit();
+		editor.putInt("refresh_interval", pref.getRefreshInterval());
+		editor.commit();
+	}
+	
+	public UserPreference getUserPreferences(){
+		return new UserPreference(preferences.getInt("refresh_interval", 5));
+	}
 }

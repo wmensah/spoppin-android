@@ -51,9 +51,18 @@ public class BaseSpoppinActivity extends ActionBarActivity {
         
 		init();
 	}
-	
+
+	@Override
+	public void onResume()
+	{
+		if (menu.isMenuShowing()) {
+	        menu.showContent(true);
+	    }
+	    super.onResume();
+	}
 	
 	@Override
+	// If the back button is pressed and the sliding menu is open, close it.
 	public void onBackPressed() {
 	    if (menu.isMenuShowing()) {
 	        menu.showContent(true);
@@ -64,6 +73,7 @@ public class BaseSpoppinActivity extends ActionBarActivity {
 	}
 	
 	@Override
+	// If the menu button (on the phone) is pressed, open the sliding menu
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 	    if ( keyCode == KeyEvent.KEYCODE_MENU ) {
 	    	if (!menu.isMenuShowing()) {

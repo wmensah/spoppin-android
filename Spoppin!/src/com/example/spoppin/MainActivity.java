@@ -60,6 +60,7 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity{
 	
 	// controls
 	private TextView lblCurrentLocation;
+	private TextView txtNoVenueFound;
 	private ListView lv;
 
 	@SuppressLint("NewApi")
@@ -75,12 +76,13 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity{
         }
         
         lblCurrentLocation = (TextView)findViewById(R.id.lblCurrentLocation);
+        txtNoVenueFound = (TextView)findViewById(R.id.txtVenueNotFound);
         
         gps = new GPS(this);
         
         GetVenuesBasedOnIntentLocation(this.getIntent());
         
-        int delay = 60000;// in ms 
+        int delay = pm.getUserPreferences().getRefreshInterval() * 60000;// mins to ms
 
         Timer timer = new Timer();
 
@@ -89,7 +91,6 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity{
         	   mHandler.sendMessage(new Message()); // set msg.obj = "" if you need to update some text
             }
          }, delay, delay);
-        
     }
 	
 	private void GetVenuesBasedOnIntentLocation(Intent i){
@@ -129,6 +130,24 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity{
         		SpopPrompt(venueList.get(position).venueId, venueList.get(position).name);
         	}     
         });
+	}
+	
+	@Override
+	public void onPause()
+	{
+		if (gps.isRunning()){
+			gps.stopGPS();
+		}
+	    super.onPause();
+	}
+	
+	@Override
+	public void onResume()
+	{
+		if (!gps.isRunning()){
+			gps.resumeGPS();
+		}
+		super.onResume();
 	}
 	
 
@@ -314,8 +333,9 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity{
 						venueList.add(new BarRank(v.getVenueId(), (i == 0? R.drawable.star : -1), v.getName(), v.Score(), i+1));
 					}
 					adapter.notifyDataSetChanged();	
+					txtNoVenueFound.setVisibility(View.INVISIBLE);
 				}else{
-					Toast.makeText(this, R.string.msg_no_venues_found, Toast.LENGTH_LONG).show();
+					txtNoVenueFound.setVisibility(View.VISIBLE);
 				}
 			}
 		}

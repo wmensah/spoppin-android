@@ -27,6 +27,16 @@
         android:layout_marginRight="5dp"
         android:layout_marginTop="20dp" >
     </ListView>
-    
+
+    <TextView  
+        android:id="@+id/txtVenueNotFound"
+	    android:layout_marginTop="10dp"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content" 
+	    android:text="No venues found" 
+	    android:textColor="#787878"
+	    android:gravity="center"
+	    android:layout_centerInParent="true"
+	    android:drawableTop="@drawable/ic_action_error" android:padding="5dp" />
 
 </RelativeLayout>

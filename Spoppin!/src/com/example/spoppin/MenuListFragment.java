@@ -1,9 +1,9 @@
 package com.example.spoppin;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,7 +11,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class MenuListFragment extends ListFragment{
 	
@@ -32,8 +31,16 @@ public class MenuListFragment extends ListFragment{
 	@Override
     public void onListItemClick(ListView l, View v, int position, long id) {
  
-        /** Invokes the implementation of the method onListFragmentItemClick in the hosting activity */
-        Log.i("info", String.valueOf(id));
+        switch(position){
+        	case 0:
+        		//Map
+        		break;
+        	case 1:
+        		//Settings
+        		Intent i = new Intent(this.getActivity().getApplicationContext(), SettingsActivity.class);
+        		this.startActivity(i);
+        		break;
+        }
     }
 
 	private class SampleItem {

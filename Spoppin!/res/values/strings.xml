@@ -29,5 +29,6 @@
     <string name="action_new">New</string>
 	<string name="action_refresh">Refresh</string>
 	<string name="action_use_my_location">Use my location</string>
+	<string name="action_cancel_settings">Cancel Settings</string>
 
 </resources>
