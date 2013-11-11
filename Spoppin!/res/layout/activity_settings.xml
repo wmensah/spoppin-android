@@ -6,8 +6,9 @@
     android:padding="5dp" >
 
 
+    	<!--  refresh interval  -->
         <TextView
-            android:id="@+id/textView1"
+            android:id="@+id/lblRefreshInterval"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Auto-refresh every:" />
@@ -17,10 +18,32 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="5 minutes"
+            android:textColor="#6A287E"
             android:textAppearance="?android:attr/textAppearanceLarge" />
 
         <SeekBar
             android:id="@+id/skbRefresh"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        
+        <!--  search radius -->
+        <TextView
+            android:id="@+id/lblSearchRadius"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="Search radius:" />
+
+        <TextView
+            android:id="@+id/txtSearchRadius"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="5 miles"
+            android:textColor="#6A287E"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+
+        <SeekBar
+            android:id="@+id/skbSearchRadius"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 

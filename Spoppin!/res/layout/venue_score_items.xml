@@ -7,7 +7,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_horizontal|fill_horizontal|center" >
+        android:gravity="center_horizontal" >
 
         <ToggleButton
             android:id="@+id/toggleDrinks"

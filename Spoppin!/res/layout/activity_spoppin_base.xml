@@ -21,11 +21,11 @@
     android:layout_alignParentTop="true"
     android:gravity="center">
     
-    <com.example.spoppin.ProgressView
+    <net.wilmens.spoppin.ProgressView
                 android:id="@+id/pvVenueRequest"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" >
-            </com.example.spoppin.ProgressView>
+            </net.wilmens.spoppin.ProgressView>
   </RelativeLayout>
     
   
