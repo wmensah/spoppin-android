@@ -39,6 +39,7 @@ public class SettingsActivity extends BaseSpoppinActivity{
 	    ActionBar actionBar = getSupportActionBar();
 	    actionBar.setDisplayHomeAsUpEnabled(true);
 
+	    saveSettings = false;
 	    userPrefs = pm.getUserPreferences();
 	    
 	    // load default prefs
@@ -51,7 +52,6 @@ public class SettingsActivity extends BaseSpoppinActivity{
 	    txtRefreshInterval.setText(String.valueOf(userPrefs.getRefreshInterval()) + " minutes");
 	    
 	    skbRefreshInterval = (SeekBar)findViewById(R.id.skbRefreshInterval);
-	    skbRefreshInterval.incrementProgressBy(5);
 	    skbRefreshInterval.setMax(30);
 	    skbRefreshInterval.setProgress(refreshIntervalProgress);
 	    skbRefreshInterval.setOnSeekBarChangeListener(new OnSeekBarChangeListener(){
@@ -90,7 +90,6 @@ public class SettingsActivity extends BaseSpoppinActivity{
 	    txtSearchRadius.setText(String.valueOf(userPrefs.getSearchRadius()) + " miles"); //TODO localize mi/km
 	    
 	    skbSearchRadius = (SeekBar)findViewById(R.id.skbSearchRadius);
-	    skbSearchRadius.incrementProgressBy(5);
 	    skbSearchRadius.setMax(100);
 	    skbSearchRadius.setProgress(searchRadiusProgress);
 	    skbSearchRadius.setOnSeekBarChangeListener(new OnSeekBarChangeListener(){

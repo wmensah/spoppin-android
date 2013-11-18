@@ -21,6 +21,7 @@ import android.content.Intent;
 import android.location.Address;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Debug;
 import android.os.Handler;
 import android.os.Message;
 import android.os.StrictMode;
@@ -103,13 +104,22 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity, I
         Boolean useCurrentLoc = true;
         
         if (i.getExtras() != null){
-        	pm.setLocation(i.getExtras().getDouble("lat", 0)
-        			, i.getExtras().getDouble("lon", 0));
+        	double lat = i.getExtras().getDouble("lat", 0);
+        	double lon = i.getExtras().getDouble("lon", 0);
         	
-        	if (pm.getLocation() != null){
-        		loc = pm.getLocation();
-    			useCurrentLoc = false;
-    	    }
+        	if (lat != 0 && lon != 0){
+        		useCurrentLoc = false;
+        		
+	        	if (pm.getUserPreferences().getRememberSearchedLocation()){
+	        		// If searched location is to be remembered, save it and use it
+	        		Log.d("spoplog", "Saving searched location");
+		        	pm.setLocation(lat, lon);
+		        	loc = pm.getLocation();
+	        	}else{
+	        		loc.setLatitude(lat);
+	        		loc.setLongitude(lon);
+	        	}
+        	}
         }
         if (useCurrentLoc){
         	// see if there was location saved in preferences
