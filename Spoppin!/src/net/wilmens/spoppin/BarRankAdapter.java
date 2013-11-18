@@ -50,7 +50,7 @@ public class BarRankAdapter extends ArrayAdapter<BarRank> {
 		}
 		
 		BarRank barRank = data.get(position);
-		holder.lblName.setText(barRank.name);
+		holder.lblName.setText(barRank.venue.getName());
 		holder.lblRank.setText(Integer.toString(barRank.rank));
 		holder.lblDrinks.setText("drinks:" + Double.toString(barRank.score.getDrinks()));
 		holder.lblMusic.setText("music:" + Double.toString(barRank.score.getMusic()));

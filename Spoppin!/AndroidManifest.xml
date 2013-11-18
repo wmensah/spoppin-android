@@ -5,7 +5,7 @@
     android:versionName="1.0" >
 
     <uses-sdk
-        android:minSdkVersion="8"
+        android:minSdkVersion="11"
         android:targetSdkVersion="17" />
     
     <uses-permission android:name="android.permission.INTERNET"/> 
@@ -33,7 +33,7 @@
         
         <meta-data
     		android:name="com.google.android.maps.v2.API_KEY"
-    		android:value="AIzaSyCQkb_ITX8BeKiSPNvyhzeh1IyKGDFdamA"/>
+    		android:value="AIzaSyANNyyeYRCz7ImCI_crmlXd5lws3-T8Hj8"/>
         
         <activity
             android:name="net.wilmens.spoppin.MainActivity"

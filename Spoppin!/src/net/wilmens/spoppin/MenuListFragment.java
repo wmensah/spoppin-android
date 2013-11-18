@@ -1,7 +1,7 @@
 package net.wilmens.spoppin;
 
-import net.wilmens.spoppin.R;
-
+import net.wilmens.spoppin.objects.VenueMarker;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,10 +16,20 @@ import android.widget.TextView;
 
 public class MenuListFragment extends ListFragment{
 	
+	private MainActivity activity;
+	
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.list, null);
     }
 
+    @Override
+    public void onAttach(Activity activity){
+    	if (!(activity instanceof MainActivity)){
+    		throw new IllegalStateException("Must be attached to an instance of MainActivity");
+    	}
+    	this.activity = (MainActivity) activity;
+    	super.onAttach(activity);
+    }
 	public void onActivityCreated(Bundle savedInstanceState) {
 	        super.onActivityCreated(savedInstanceState);
 	        SampleAdapter adapter = new SampleAdapter(getActivity());
@@ -38,6 +48,7 @@ public class MenuListFragment extends ListFragment{
         	case 0:
         		//Map
         		i = new Intent(this.getActivity().getApplicationContext(), VenueMapActivity.class);
+        		i.putExtra("venues", VenueMarker.VenueListToVenueMarkerList(this.activity.venueList));
         		this.startActivity(i);
         		break;
         	case 1:

@@ -84,7 +84,8 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity, I
         
         GetVenuesBasedOnIntentLocation(this.getIntent());
         
-        int delay = pm.getUserPreferences().getRefreshInterval() * 60000;// mins to ms
+        int refInt = pm.getUserPreferences().getRefreshInterval();
+        int delay = (refInt == 0)? 5 : refInt * 60000;// mins to ms
 
         Timer timer = new Timer();
 
@@ -129,7 +130,7 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity, I
         lv.setOnItemClickListener(new OnItemClickListener(){
         	
         	public void onItemClick(AdapterView<?> parent, View view, int position, long id){
-        		SpopPrompt(venueList.get(position).venueId, venueList.get(position).name);
+        		SpopPrompt(venueList.get(position).venue.getVenueId(), venueList.get(position).venue.getName());
         	}     
         });
 	}
@@ -332,7 +333,7 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity, I
 				if (resval.venues.size() > 0){
 					for(int i = 0; i < resval.venues.size(); i++){
 						Venue v = resval.venues.get(i);
-						venueList.add(new BarRank(v.getVenueId(), (i == 0? R.drawable.star : -1), v.getName(), v.Score(), i+1));
+						venueList.add(new BarRank(v, (i == 0? R.drawable.star : -1), v.Score(), i+1));
 					}
 					adapter.notifyDataSetChanged();	
 					txtNoVenueFound.setVisibility(View.INVISIBLE);

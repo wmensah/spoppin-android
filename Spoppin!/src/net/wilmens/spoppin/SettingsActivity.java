@@ -1,25 +1,32 @@
 package net.wilmens.spoppin;
 
 import net.wilmens.spoppin.objects.UserPreference;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import net.wilmens.spoppin.R;
+public class SettingsActivity extends BaseSpoppinActivity{
 
-public class SettingsActivity extends BaseSpoppinActivity implements OnSeekBarChangeListener{
-
+	// controls
 	SeekBar skbRefreshInterval;
+	SeekBar skbSearchRadius;
 	TextView txtRefreshInterval;
+	TextView txtSearchRadius;
+	CheckBox chkRememberSearchedLocation;
+	
 	UserPreference userPrefs;
+	
 	int refreshIntervalProgress;
+	int searchRadiusProgress;
+	boolean rememberSearchedLocationProgress;
     Boolean saveSettings;
 	
 	@Override
@@ -31,44 +38,97 @@ public class SettingsActivity extends BaseSpoppinActivity implements OnSeekBarCh
 	    // allow navigating up with the app icon
 	    ActionBar actionBar = getSupportActionBar();
 	    actionBar.setDisplayHomeAsUpEnabled(true);
-	    
+
 	    userPrefs = pm.getUserPreferences();
 	    
-	    skbRefreshInterval = (SeekBar)findViewById(R.id.skbRefresh);
-	    skbRefreshInterval.setOnSeekBarChangeListener(this);
-	    skbRefreshInterval.incrementProgressBy(5);
-	    skbRefreshInterval.setMax(30);
-	    skbRefreshInterval.setProgress(userPrefs.getRefreshInterval());
+	    // load default prefs
+	    refreshIntervalProgress = userPrefs.getRefreshInterval();
+	    searchRadiusProgress = userPrefs.getSearchRadius();
+	    rememberSearchedLocationProgress = userPrefs.getRememberSearchedLocation();
 	    
+	    // Refresh Interval
 	    txtRefreshInterval = (TextView)findViewById(R.id.txtRefreshInterval);
 	    txtRefreshInterval.setText(String.valueOf(userPrefs.getRefreshInterval()) + " minutes");
 	    
-	    saveSettings = true;
-	}
-	
-	@Override
-    public void onProgressChanged(SeekBar seekBar, int progress,
-    		boolean fromUser) {
-    	if (progress < 5){
-    		progress = 5;
-    		skbRefreshInterval.setProgress(5);
-    	}
-		refreshIntervalProgress = progress;
-		if (txtRefreshInterval != null){
-			txtRefreshInterval.setText(progress + " minutes");	  
-		}
-    }
+	    skbRefreshInterval = (SeekBar)findViewById(R.id.skbRefreshInterval);
+	    skbRefreshInterval.incrementProgressBy(5);
+	    skbRefreshInterval.setMax(30);
+	    skbRefreshInterval.setProgress(refreshIntervalProgress);
+	    skbRefreshInterval.setOnSeekBarChangeListener(new OnSeekBarChangeListener(){
 
-	@Override
-	public void onStartTrackingTouch(SeekBar seekBar) {
-		// TODO Auto-generated method stub
-		
-	}
+			@Override
+			public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+				saveSettings = true;
+		    	if (progress < 5){
+		    		progress = 5;
+		    		skbRefreshInterval.setProgress(5);
+		    	}
+				refreshIntervalProgress = progress;
+				if (txtRefreshInterval != null){
+					txtRefreshInterval.setText(progress + " minutes");	  
+				}				
+			}
 
-	@Override
-	public void onStopTrackingTouch(SeekBar seekBar) {
-		// TODO Auto-generated method stub
-		
+			@Override
+			public void onStartTrackingTouch(SeekBar seekBar) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void onStopTrackingTouch(SeekBar seekBar) {
+				// TODO Auto-generated method stub
+				
+			}
+	    });
+	    
+
+	    
+	    
+	    // Search Radius
+	    txtSearchRadius = (TextView)findViewById(R.id.txtSearchRadius);
+	    txtSearchRadius.setText(String.valueOf(userPrefs.getSearchRadius()) + " miles"); //TODO localize mi/km
+	    
+	    skbSearchRadius = (SeekBar)findViewById(R.id.skbSearchRadius);
+	    skbSearchRadius.incrementProgressBy(5);
+	    skbSearchRadius.setMax(100);
+	    skbSearchRadius.setProgress(searchRadiusProgress);
+	    skbSearchRadius.setOnSeekBarChangeListener(new OnSeekBarChangeListener(){
+
+			@Override
+			public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+				saveSettings = true;
+				searchRadiusProgress = progress;
+				if (txtSearchRadius != null){
+					txtSearchRadius.setText(progress + " miles");	  
+				}				
+			}
+
+			@Override
+			public void onStartTrackingTouch(SeekBar seekBar) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void onStopTrackingTouch(SeekBar seekBar) {
+				// TODO Auto-generated method stub
+				
+			}
+	    }); 
+	    
+	    // Remember Searched Location
+	    chkRememberSearchedLocation = (CheckBox)findViewById(R.id.chkRememberSearchedLocation);
+	    chkRememberSearchedLocation.setChecked(rememberSearchedLocationProgress);
+	    chkRememberSearchedLocation.setOnCheckedChangeListener(new OnCheckedChangeListener(){
+
+			@Override
+			public void onCheckedChanged(CompoundButton checkbox, boolean isChecked) {
+				saveSettings = true;
+				rememberSearchedLocationProgress = isChecked;
+			}
+	    	
+	    });
 	}
 	
 	@Override
@@ -101,6 +161,9 @@ public class SettingsActivity extends BaseSpoppinActivity implements OnSeekBarCh
     
     private void SaveSettings(){
     	userPrefs.setRefreshInterval(refreshIntervalProgress);
+    	userPrefs.setSearchRadius(searchRadiusProgress);
+    	userPrefs.setRememberSearchedLocation(rememberSearchedLocationProgress);
+    	
     	pm.saveUserPreferences(userPrefs);
     	Log.d("spoppin", "settings saved");
     }

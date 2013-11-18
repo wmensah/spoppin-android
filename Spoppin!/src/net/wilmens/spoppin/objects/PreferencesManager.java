@@ -9,15 +9,20 @@ public class PreferencesManager {
 	
 	private SharedPreferences preferences = null;
 	private SharedPreferences.Editor editor = null;
+	private String PREFKEY_LATITUDE = "latitude";
+	private String PREFKEY_LONGITUDE = "longitude";
+	private String PREFKEY_SEARCH_RADIUS = "search_radius";
+	
 	
 	public PreferencesManager(Context c){
 		preferences = PreferenceManager.getDefaultSharedPreferences(c);
 	}
 	
+	// Preference: Location
 	public void setLocation(double latitude, double longitude){
 		editor = preferences.edit();
-		editor.putString("latitude", String.valueOf(latitude));
-		editor.putString("longitude", String.valueOf(longitude));
+		editor.putString(PREFKEY_LATITUDE, String.valueOf(latitude));
+		editor.putString(PREFKEY_LONGITUDE, String.valueOf(longitude));
 		editor.commit();
 	}
 	
@@ -27,36 +32,51 @@ public class PreferencesManager {
 	
 	public Location getLocation(){
 		Location loc = new Location("newlocprovider");
-		loc.setLatitude(Double.parseDouble(preferences.getString("latitude", "0.0")));
-		loc.setLongitude(Double.parseDouble(preferences.getString("longitude", "0.0")));
+		loc.setLatitude(Double.parseDouble(preferences.getString(PREFKEY_LATITUDE, "0.0")));
+		loc.setLongitude(Double.parseDouble(preferences.getString(PREFKEY_LONGITUDE, "0.0")));
 		if (loc.getLatitude() == 0 || loc.getLongitude() == 0)
 			return null;
 		return loc;
 	}
 	
 	public double getLatitude(){
-		return Double.parseDouble(preferences.getString("latitude", "0.0"));
+		return Double.parseDouble(preferences.getString(PREFKEY_LATITUDE, "0.0"));
 	}
 	
 	public double getLongitude(){
-		return Double.parseDouble(preferences.getString("longitude", "0.0"));
+		return Double.parseDouble(preferences.getString(PREFKEY_LONGITUDE, "0.0"));
 	}
 	
 	
 	public void resetLocation(){
 		editor = preferences.edit();
-		editor.remove("latitude");
-		editor.remove("longitude");
+		editor.remove(PREFKEY_LATITUDE);
+		editor.remove(PREFKEY_LONGITUDE);
 		editor.commit();
+	}
+	
+	//Preference: Search Radius
+	public void setSearchRadius(int radius){
+		editor = preferences.edit();
+		editor.putString(PREFKEY_SEARCH_RADIUS, String.valueOf(radius));
+		editor.commit();
+	}
+	
+	public int getSearchRadius(){
+		return Integer.parseInt(preferences.getString(PREFKEY_SEARCH_RADIUS, "5"));
 	}
 	
 	public void saveUserPreferences(UserPreference pref){
 		editor = preferences.edit();
 		editor.putInt("refresh_interval", pref.getRefreshInterval());
+		editor.putInt("search_radius", pref.getSearchRadius());
+		editor.putBoolean("remember_searched_location", pref.getRememberSearchedLocation());
 		editor.commit();
 	}
 	
 	public UserPreference getUserPreferences(){
-		return new UserPreference(preferences.getInt("refresh_interval", 5));
+		return new UserPreference(preferences.getInt("refresh_interval", 5)
+				, preferences.getInt("search_radius", 5)
+				, preferences.getBoolean("remember_searched_location", true));
 	}
 }
