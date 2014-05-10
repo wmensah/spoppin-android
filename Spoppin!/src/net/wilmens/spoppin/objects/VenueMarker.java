@@ -46,6 +46,11 @@ public class VenueMarker implements Serializable {
 		this.longitude = venue.getAddress().getLongitude();
 	}
 	
+	/*
+	 * Converts a list of Venues to a list of Marker objects that can be placed on the map
+	 * @param - List of venues
+	 * @return - List of VenueMarker objects
+	 */
 	public static ArrayList<VenueMarker> VenueListToVenueMarkerList(ArrayList<BarRank> venues){
 		ArrayList<VenueMarker> retval = new ArrayList<VenueMarker>();
 		Iterator<BarRank> i = venues.iterator();

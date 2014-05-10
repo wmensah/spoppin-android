@@ -10,6 +10,7 @@ import net.wilmens.spoppin.requests.GetVenueListRequest;
 import net.wilmens.spoppin.requests.GetVenueListResponse;
 import net.wilmens.spoppin.requests.VenueRankRequest;
 import net.wilmens.spoppin.requests.VenueRankResponse;
+import net.wilmens.spoppin.utilities.ConnectionUtils;
 import net.wilmens.spoppin.utilities.LocationUtils;
 import net.wilmens.spoppin.utilities.UIUtils;
 
@@ -97,8 +98,12 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity, I
          }, delay, delay);
     }
 	
+	/*
+	 * Sometimes coordinates (current or last known location) may be passed via the intent 
+	 * so this method allows us to get venues based on that.
+	 * @param i - Intent containing a set of coordinates as Extras (ie. lat, lon)
+	 */
 	private void GetVenuesBasedOnIntentLocation(Intent i){
-		// Set location either passed to activity or last known location
         Location loc = new Location("newlocprovider");
         
         Boolean useCurrentLoc = true;
@@ -126,10 +131,14 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity, I
         	loc = pm.getLocation();
         	if (loc == null){
         		loc = gps.getLastKnownLocation();
-        		pm.setLocation(loc);
+        		if (loc != null)
+        			pm.setLocation(loc);
         	}
         }
-	    locationChanged(loc.getLongitude(), loc.getLatitude());
+        if (loc == null)
+        	Toast.makeText(this, "Location not found", Toast.LENGTH_SHORT).show();
+        else
+        	locationChanged(loc.getLongitude(), loc.getLatitude());
 	    
 	    venueList = new ArrayList<BarRank>();
         
@@ -164,6 +173,11 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity, I
 	}
 	
 
+	/*
+	 * Displays a prompt for voting allowing the user to rank different categories for a venue.
+	 * @param venueId - Id of the venue being ranked
+	 * @param venueName - Name of the venue being ranked
+	 */
     private void SpopPrompt(final int venueId, final String venueName){
     	selectedVenue = venueName;
     	
@@ -214,6 +228,10 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity, I
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
+    	if (!ConnectionUtils.isConnected(this)){
+    		Toast.makeText(this, "No Internet Connection", Toast.LENGTH_SHORT).show();
+    		return true;
+    	}
     	Intent i = null;
         if (item.getItemId() == R.id.action_refresh) {
 			super.init();
@@ -258,7 +276,12 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity, I
     	}
     }
     
-	
+	/*
+	 * Calls the webservice method to rank a Venue based on the categories associated with it.
+	 * @param venueId - Venue to be ranked
+	 * @param items - Categories associated with the Venue to be ranked
+	 * @param isSpoppin - If true, the Venue gets a thumb-up (spoppin) for the categories, or thumbs-down (sucks) otherwise
+	 */
 	private void RankVenue(int venueId, int[] items, boolean isSpoppin){
 		this.isSpoppin = isSpoppin;
     	
@@ -300,11 +323,15 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity, I
 		this.RequestNearbyVenues(pm.getLatitude(), pm.getLongitude());
 	}
 	
+	/*
+	 * Calls the webservice to obtain a list of Venues at a given coordinate
+	 * @param latitude - latitude of coordinate
+	 * @param longitude - longitude of coordinate
+	 */
 	private void RequestNearbyVenues(double latitude, double longitude){
 		if (requestPending)
 			return; // a request has already been made
 		
-		// request venues
 		requestPending = true;
         vlr = new GetVenueListRequest(this);
         String sClassName = "net.wilmens.spoppin.MainActivity";   
@@ -396,22 +423,32 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity, I
 			pm.setLocation(newloc);
 		}
 		
-		// Make request
-		if (pm.getLocation() != null){
-			RequestNearbyVenues(pm.getLatitude(), pm.getLongitude());
-			
-			// Get the current address and display the city and state
-			Address address = UIUtils.GeocodeCoordinates(MainActivity.this
-					, pm.getLatitude()
-					, pm.getLongitude(), 1);
-			if (address != null){
-				//Log.d(context.getLogKey(), "Location address found: " + address.getLocality() + "," + address.getAdminArea());
-				this.lblCurrentLocation.setVisibility(View.VISIBLE);
-				this.lblCurrentLocation.setText(address.getLocality() + ", "
-						+ address.getAdminArea());
-			}else{
-				this.lblCurrentLocation.setVisibility(View.GONE);
+		UpdateVenuesAtCurrentLocation(); //TODO: check if refresh interval has elapsed
+	}
+	
+	private void UpdateVenuesAtCurrentLocation(){
+		if (ConnectionUtils.isConnected(this)){
+			if (pm.getLocation() != null){
+				RequestNearbyVenues(pm.getLatitude(), pm.getLongitude());
+				
+				// Get the current address and display the city and state
+				Address address = UIUtils.GeocodeCoordinates(MainActivity.this
+						, pm.getLatitude()
+						, pm.getLongitude(), 1);
+				if (address != null){
+					this.lblCurrentLocation.setVisibility(View.VISIBLE);
+					this.lblCurrentLocation.setText(address.getLocality() + ", "
+							+ address.getAdminArea());
+				}else{
+					this.lblCurrentLocation.setVisibility(View.GONE);
+				}
 			}
+		}
+		else{
+			gps.stopGPS();
+			this.lblCurrentLocation.setVisibility(View.GONE);
+			this.SetProgressLabelText(null, false);
+			Toast.makeText(this, "No Internet Connection", Toast.LENGTH_SHORT).show();
 		}
 	}
 

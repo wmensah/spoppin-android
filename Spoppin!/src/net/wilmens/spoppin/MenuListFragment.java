@@ -30,14 +30,16 @@ public class MenuListFragment extends ListFragment{
     	this.activity = (MainActivity) activity;
     	super.onAttach(activity);
     }
+    
+    @Override
 	public void onActivityCreated(Bundle savedInstanceState) {
-	        super.onActivityCreated(savedInstanceState);
-	        SampleAdapter adapter = new SampleAdapter(getActivity());
-	        
-	        adapter.add(new SampleItem("Map", R.drawable.ic_action_place));
-	        adapter.add(new SampleItem("Settings", R.drawable.ic_action_settings));
-	        
-	        setListAdapter(adapter);
+        super.onActivityCreated(savedInstanceState);
+        SampleAdapter adapter = new SampleAdapter(getActivity());
+        
+        adapter.add(new SlidingMenuItem("Map", R.drawable.ic_action_place));
+        adapter.add(new SlidingMenuItem("Settings", R.drawable.ic_action_settings));
+        
+        setListAdapter(adapter);
 	}
 	
 	@Override
@@ -59,16 +61,16 @@ public class MenuListFragment extends ListFragment{
         }
     }
 
-	private class SampleItem {
+	private class SlidingMenuItem {
 	        public String tag;
 	        public int iconRes;
-	        public SampleItem(String tag, int iconRes) {
+	        public SlidingMenuItem(String tag, int iconRes) {
 	                this.tag = tag; 
 	                this.iconRes = iconRes;
 	        }
 	}
 
-	public class SampleAdapter extends ArrayAdapter<SampleItem> {
+	public class SampleAdapter extends ArrayAdapter<SlidingMenuItem> {
 	
 	        public SampleAdapter(Context context) {
 	                super(context, 0);
