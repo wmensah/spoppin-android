@@ -1,21 +1,27 @@
 package net.wilmens.spoppin;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 import net.wilmens.spoppin.objects.VenueMarker;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.view.View;
+import android.widget.TextView;
 
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter;
 import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
+import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 public class VenueMapActivity extends ActionBarActivity {
@@ -56,6 +62,38 @@ public class VenueMapActivity extends ActionBarActivity {
 	            // Remove listener to prevent position reset on camera move.
 	        	mMap.setOnCameraChangeListener(null);
 			}
+	    });
+	    
+	    mMap.setInfoWindowAdapter(new InfoWindowAdapter(){
+
+			@Override
+			public View getInfoContents(Marker args) {
+			View v = getLayoutInflater().inflate(R.layout.info_window_layout, null);
+				
+				TextView txtMarkerTitle = (TextView)v.findViewById(R.id.txtMarkerTitle);
+				txtMarkerTitle.setText(args.getTitle() + " >");
+				
+				mMap.setOnInfoWindowClickListener(new OnInfoWindowClickListener(){
+
+					@Override
+					public void onInfoWindowClick(Marker marker) {
+						String uri = String.format(Locale.ENGLISH, "google.navigation:q=%f,%f", marker.getPosition().latitude, marker.getPosition().longitude);
+						Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+						startActivity(intent);
+						
+					}
+					
+				});
+				return v;
+				
+			}
+
+			@Override
+			public View getInfoWindow(Marker arg0) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+	    	
 	    });
 	}
 	

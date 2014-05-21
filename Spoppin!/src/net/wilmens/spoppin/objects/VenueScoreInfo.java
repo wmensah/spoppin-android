@@ -1,5 +1,9 @@
 package net.wilmens.spoppin.objects;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+
 public class VenueScoreInfo {
 	private double drinks;
 	public double getDrinks(){
@@ -31,5 +35,23 @@ public class VenueScoreInfo {
 	}
 	public void setGuys(double value){
 		guys = value;
+	}
+	
+	public ScoreCategoryEnum getBestCategory(){
+		Map<ScoreCategoryEnum, Double> data = new HashMap<ScoreCategoryEnum, Double>();
+		data.put(ScoreCategoryEnum.Drinks, drinks);
+		data.put(ScoreCategoryEnum.Music, music);
+		data.put(ScoreCategoryEnum.Girls, girls);
+		data.put(ScoreCategoryEnum.Guys, guys);
+		
+		Entry<ScoreCategoryEnum, Double> maxEntry = null;
+		
+		for(Entry<ScoreCategoryEnum, Double> entry : data.entrySet()){
+			if (maxEntry == null || entry.getValue() > maxEntry.getValue()){
+				maxEntry = entry;
+			}
+		}
+		
+		return maxEntry.getKey();
 	}
 }

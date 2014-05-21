@@ -17,9 +17,16 @@
             android:text="#" />
 
         <ImageView
+            android:id="@+id/imgTopCategory"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:paddingLeft="5dp"
+            android:src="@drawable/drinks_off" />
+
+        <ImageView
             android:id="@+id/imgIcon"
             android:layout_width="30dip"
-            android:layout_height="30dip"
+            android:layout_height="match_parent"
             android:contentDescription="Star"
             android:src="@drawable/star" />
 

@@ -43,6 +43,7 @@ public class BarRankAdapter extends ArrayAdapter<BarRank> {
 			holder.lblGirls = (TextView)row.findViewById(R.id.lblGirls);
 			holder.lblGuys = (TextView)row.findViewById(R.id.lblGuys);
 			holder.imgIcon = (ImageView)row.findViewById(R.id.imgIcon);
+			holder.imgTopCategory = (ImageView)row.findViewById(R.id.imgTopCategory);
 			
 			row.setTag(holder);			
 		}else{
@@ -57,6 +58,22 @@ public class BarRankAdapter extends ArrayAdapter<BarRank> {
 		holder.lblGirls.setText("girls:" + Double.toString(barRank.score.getGirls()));
 		holder.lblGuys.setText("guys:" + Double.toString(barRank.score.getGuys()));
 		holder.imgIcon.setImageResource(barRank.icon);
+		switch(barRank.score.getBestCategory()){
+		case Drinks:
+			holder.imgTopCategory.setImageResource(R.drawable.drinks_off);
+			break;
+		case Music:
+			holder.imgTopCategory.setImageResource(R.drawable.music_off);
+			break;
+		case Girls:
+			holder.imgTopCategory.setImageResource(R.drawable.girls_off);
+			break;
+		case Guys:
+			holder.imgTopCategory.setImageResource(R.drawable.guys_off);
+			break;
+		default:
+			holder.imgTopCategory.setImageResource(R.drawable.ic_launcher); //TODO: replace this icon
+		}
 		
 		if (barRank.rank > 1){
 			holder.imgIcon.setVisibility(0);
@@ -67,6 +84,7 @@ public class BarRankAdapter extends ArrayAdapter<BarRank> {
 
 	static class BarRankHolder{
 		ImageView imgIcon;
+		ImageView imgTopCategory;
 		TextView lblRank;
 		TextView lblName;
 		TextView lblDrinks;
