@@ -346,8 +346,8 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity, I
 			List<RequestParameter> params = new java.util.ArrayList<RequestParameter>();
 			params.add(new RequestParameter("latitude", Double.toString(latitude)));
 			params.add(new RequestParameter("longitude", Double.toString(longitude)));
-			params.add(new RequestParameter("radius", "10")); //TODO: Allow user to change radius from Settings page
-			params.add(new RequestParameter("authorized", "0"));
+			params.add(new RequestParameter("radius", Integer.toString(pm.getUserPreferences().getSearchRadius())));
+			params.add(new RequestParameter("authorized", "1"));
 			
 			vlr.buildRequest(params);						
 			vlr.sendRequest();

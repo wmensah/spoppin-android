@@ -24,6 +24,18 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+//import com.google.android.gms.maps.CameraUpdateFactory;
+//import com.google.android.gms.maps.GoogleMap;
+//import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter;
+//import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
+//import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
+//import com.google.android.gms.maps.SupportMapFragment;
+//import com.google.android.gms.maps.model.CameraPosition;
+//import com.google.android.gms.maps.model.LatLng;
+//import com.google.android.gms.maps.model.LatLngBounds;
+//import com.google.android.gms.maps.model.Marker;
+//import com.google.android.gms.maps.model.MarkerOptions;
+
 public class VenueMapActivity extends ActionBarActivity {
 	
 	private GoogleMap mMap;

@@ -23,8 +23,13 @@ public class GPS {
         // GPS Position
         mlocManager = (LocationManager) ((Activity) this.main).getSystemService(Context.LOCATION_SERVICE);
         mlocListener = new MyLocationListener();
-        mlocManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mlocListener);
-        mlocManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, mlocListener);
+        
+        if (mlocManager.getAllProviders().contains(LocationManager.NETWORK_PROVIDER))
+        	mlocManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, mlocListener);
+
+        if (mlocManager.getAllProviders().contains(LocationManager.GPS_PROVIDER))
+        	mlocManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mlocListener);
+
         // GPS Position END
         this.isRunning = true;
     }
@@ -37,8 +42,12 @@ public class GPS {
     }
 
     public void resumeGPS() {
-        mlocManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mlocListener);
-        mlocManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, mlocListener);
+        if (mlocManager.getAllProviders().contains(LocationManager.NETWORK_PROVIDER))
+        	mlocManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, mlocListener);
+
+        if (mlocManager.getAllProviders().contains(LocationManager.GPS_PROVIDER))
+        	mlocManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mlocListener);
+        
         this.isRunning = true;
     }
 

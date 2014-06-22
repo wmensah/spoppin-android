@@ -59,20 +59,20 @@ public class BarRankAdapter extends ArrayAdapter<BarRank> {
 		holder.lblGuys.setText("guys:" + Double.toString(barRank.score.getGuys()));
 		holder.imgIcon.setImageResource(barRank.icon);
 		switch(barRank.score.getBestCategory()){
-		case Drinks:
-			holder.imgTopCategory.setImageResource(R.drawable.drinks_off);
-			break;
-		case Music:
-			holder.imgTopCategory.setImageResource(R.drawable.music_off);
-			break;
-		case Girls:
-			holder.imgTopCategory.setImageResource(R.drawable.girls_off);
-			break;
-		case Guys:
-			holder.imgTopCategory.setImageResource(R.drawable.guys_off);
-			break;
-		default:
-			holder.imgTopCategory.setImageResource(R.drawable.ic_launcher); //TODO: replace this icon
+			case Drinks:
+				holder.imgTopCategory.setImageResource(R.drawable.drinks_off);
+				break;
+			case Music:
+				holder.imgTopCategory.setImageResource(R.drawable.music_off);
+				break;
+			case Girls:
+				holder.imgTopCategory.setImageResource(R.drawable.girls_off);
+				break;
+			case Guys:
+				holder.imgTopCategory.setImageResource(R.drawable.guys_off);
+				break;
+			default:
+				holder.imgTopCategory.setImageResource(R.drawable.ic_launcher); //TODO: replace this icon
 		}
 		
 		if (barRank.rank > 1){
