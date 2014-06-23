@@ -27,10 +27,20 @@ public class UserPreference {
 		this.rememberSearchedLocation = remember;
 	}
 	
-	public UserPreference(int refreshInterval, int searchRadius, boolean rememberSearchedLocation){
+	boolean showStatistics;
+	public void setShowStatistics(boolean show){
+		this.showStatistics = show;
+	}
+	public boolean getShowStatistics(){
+		return this.showStatistics;
+	}
+	
+	public UserPreference(int refreshInterval, int searchRadius, boolean rememberSearchedLocation,
+			boolean showStatistics){
 		this.refreshInterval = refreshInterval;
 		this.searchRadius = searchRadius;
 		this.rememberSearchedLocation = rememberSearchedLocation;
+		this.showStatistics = showStatistics;
 	}
 
 }

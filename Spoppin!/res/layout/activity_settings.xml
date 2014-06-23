@@ -55,4 +55,12 @@
             android:checked="true"
             android:text="Remember searched location" />
 
+        <CheckBox
+            android:id="@+id/chkShowStatistics"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:checked="true"
+            android:text="Show statistics" />
+
 </LinearLayout>

@@ -71,12 +71,14 @@ public class PreferencesManager {
 		editor.putInt("refresh_interval", pref.getRefreshInterval());
 		editor.putInt("search_radius", pref.getSearchRadius());
 		editor.putBoolean("remember_searched_location", pref.getRememberSearchedLocation());
+		editor.putBoolean("show_statistics", pref.getShowStatistics());
 		editor.commit();
 	}
 	
 	public UserPreference getUserPreferences(){
 		return new UserPreference(preferences.getInt("refresh_interval", 5)
 				, preferences.getInt("search_radius", 5)
-				, preferences.getBoolean("remember_searched_location", true));
+				, preferences.getBoolean("remember_searched_location", true)
+				, preferences.getBoolean("show_statistics", true));
 	}
 }

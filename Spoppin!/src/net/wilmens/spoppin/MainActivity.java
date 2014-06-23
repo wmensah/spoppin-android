@@ -34,6 +34,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -178,7 +180,8 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity, I
 	 * @param venueId - Id of the venue being ranked
 	 * @param venueName - Name of the venue being ranked
 	 */
-    private void SpopPrompt(final int venueId, final String venueName){
+    @SuppressWarnings("deprecation")
+	private void SpopPrompt(final int venueId, final String venueName){
     	selectedVenue = venueName;
     	
     	// Inflate the venue_score_items layout as a view and use it in the dialog
@@ -194,6 +197,7 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity, I
     	builder.setMessage(String.format(getString(R.string.spop_prompt_message), venueName));
     	builder.setTitle(R.string.spop_prompt_title);
     	builder.setView(layout);
+    	
     	builder.setPositiveButton(R.string.spoppin, new DialogInterface.OnClickListener() {
 			
 			@Override
@@ -204,6 +208,7 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity, I
 						, true);	
 			}
 		});
+    	
     	builder.setNegativeButton(R.string.sucks, new DialogInterface.OnClickListener() {
 			
 			@Override
@@ -214,8 +219,81 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity, I
 						, false);
 			}
 		});
-    	AlertDialog dialog = builder.create();
+    	final AlertDialog dialog = builder.create();
     	dialog.show();
+    	dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+    	dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setEnabled(false);
+    	
+       	tbDrinks.setOnCheckedChangeListener(new OnCheckedChangeListener(){
+
+    			@Override
+    			public void onCheckedChanged(CompoundButton buttonView,
+    					boolean isChecked) {
+    				if (isChecked || AnyCategorySelected(tbDrinks, tbMusic, tbGirls, tbGuys)){
+    					dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
+    			    	dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setEnabled(true);
+    				}else{
+    					dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+    			    	dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setEnabled(false);
+    				}
+    			}
+        	});
+        	
+        	tbMusic.setOnCheckedChangeListener(new OnCheckedChangeListener(){
+
+    			@Override
+    			public void onCheckedChanged(CompoundButton buttonView,
+    					boolean isChecked) {
+    				if (isChecked || AnyCategorySelected(tbDrinks, tbMusic, tbGirls, tbGuys)){
+    					dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
+    			    	dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setEnabled(true);
+    				}else{
+    					dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+    			    	dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setEnabled(false);
+    				}
+    			}
+        	});
+        	
+        	tbGirls.setOnCheckedChangeListener(new OnCheckedChangeListener(){
+
+    			@Override
+    			public void onCheckedChanged(CompoundButton buttonView,
+    					boolean isChecked) {
+    				if (isChecked || AnyCategorySelected(tbDrinks, tbMusic, tbGirls, tbGuys)){
+    					dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
+    			    	dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setEnabled(true);
+    				}else{
+    					dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+    			    	dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setEnabled(false);
+    				}
+    			}
+        	});
+        	
+        	tbGuys.setOnCheckedChangeListener(new OnCheckedChangeListener(){
+
+    			@Override
+    			public void onCheckedChanged(CompoundButton buttonView,
+    					boolean isChecked) {
+    				if (isChecked || AnyCategorySelected(tbDrinks, tbMusic, tbGirls, tbGuys)){
+    					dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
+    			    	dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setEnabled(true);
+    				}else{
+    					dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+    			    	dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setEnabled(false);
+    				}			
+    			}
+        	});
+        	
+    	
+    }
+    
+    private Boolean AnyCategorySelected(ToggleButton... args){
+    	for(int i = 0; i < args.length; i++){
+    		if (args[i].isChecked()){
+    			return true;
+    		}
+    	}
+    	return false;    	
     }
     
     @Override

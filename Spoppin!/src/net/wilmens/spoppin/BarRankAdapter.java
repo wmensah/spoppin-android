@@ -2,15 +2,16 @@ package net.wilmens.spoppin;
 
 import java.util.ArrayList;
 
-import net.wilmens.spoppin.R;
-
+import net.wilmens.spoppin.objects.PreferencesManager;
 import android.app.Activity;
 import android.content.Context;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class BarRankAdapter extends ArrayAdapter<BarRank> {
@@ -44,6 +45,15 @@ public class BarRankAdapter extends ArrayAdapter<BarRank> {
 			holder.lblGuys = (TextView)row.findViewById(R.id.lblGuys);
 			holder.imgIcon = (ImageView)row.findViewById(R.id.imgIcon);
 			holder.imgTopCategory = (ImageView)row.findViewById(R.id.imgTopCategory);
+			
+			PreferencesManager pm = new PreferencesManager(context);
+			LinearLayout stats = (LinearLayout)row.findViewById(R.id.llVenueRankCategories);
+			stats.setVisibility(pm.getUserPreferences().getShowStatistics()? View.VISIBLE : View.GONE);
+			if (!pm.getUserPreferences().getShowStatistics()){
+				row.setPadding(0, 20, 0, 20);
+			}else{
+				row.setPadding(0, 15, 0, 15);
+			}
 			
 			row.setTag(holder);			
 		}else{

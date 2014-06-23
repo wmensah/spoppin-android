@@ -21,12 +21,14 @@ public class SettingsActivity extends BaseSpoppinActivity{
 	TextView txtRefreshInterval;
 	TextView txtSearchRadius;
 	CheckBox chkRememberSearchedLocation;
+	CheckBox chkShowStatistics;
 	
 	UserPreference userPrefs;
 	
 	int refreshIntervalProgress;
 	int searchRadiusProgress;
 	boolean rememberSearchedLocationProgress;
+	boolean showStatistics;
     Boolean saveSettings;
 	
 	@Override
@@ -46,6 +48,7 @@ public class SettingsActivity extends BaseSpoppinActivity{
 	    refreshIntervalProgress = userPrefs.getRefreshInterval();
 	    searchRadiusProgress = userPrefs.getSearchRadius();
 	    rememberSearchedLocationProgress = userPrefs.getRememberSearchedLocation();
+	    showStatistics = userPrefs.getShowStatistics();
 	    
 	    // Refresh Interval
 	    txtRefreshInterval = (TextView)findViewById(R.id.txtRefreshInterval);
@@ -128,6 +131,20 @@ public class SettingsActivity extends BaseSpoppinActivity{
 			}
 	    	
 	    });
+	    
+	    // Show Statistics
+	    chkShowStatistics = (CheckBox)findViewById(R.id.chkShowStatistics);
+	    chkShowStatistics.setChecked(showStatistics);
+	    chkShowStatistics.setOnCheckedChangeListener(new OnCheckedChangeListener(){
+
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView,
+					boolean isChecked) {
+				saveSettings = true;
+				showStatistics = isChecked;				
+			}	    	
+	    });
+	    
 	}
 	
 	@Override
@@ -162,6 +179,7 @@ public class SettingsActivity extends BaseSpoppinActivity{
     	userPrefs.setRefreshInterval(refreshIntervalProgress);
     	userPrefs.setSearchRadius(searchRadiusProgress);
     	userPrefs.setRememberSearchedLocation(rememberSearchedLocationProgress);
+    	userPrefs.setShowStatistics(showStatistics);
     	
     	pm.saveUserPreferences(userPrefs);
     	Log.d("spoppin", "settings saved");
