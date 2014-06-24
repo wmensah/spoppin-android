@@ -138,7 +138,7 @@ public class BaseSpoppinActivity extends ActionBarActivity {
 				msg = getString(R.string.msg_no_network_connection);
 				break;
 			default:
-				msg = getString(R.string.msg_no_server_communication);
+				msg = null;// getString(R.string.msg_no_server_communication);
 				break;
 		}
 		if (msg != null){

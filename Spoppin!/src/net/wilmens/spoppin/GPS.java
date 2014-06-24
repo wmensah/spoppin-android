@@ -56,7 +56,18 @@ public class GPS {
     }
     
     public Location getLastKnownLocation(){
-    	String locationProvider = LocationManager.NETWORK_PROVIDER;
+    	String locationProvider = null;
+    	
+        if (mlocManager.getAllProviders().contains(LocationManager.NETWORK_PROVIDER))
+        	locationProvider = LocationManager.NETWORK_PROVIDER;
+
+        if (mlocManager.getAllProviders().contains(LocationManager.GPS_PROVIDER))
+        	locationProvider = LocationManager.GPS_PROVIDER;
+        
+        if (locationProvider == null){
+        	return null;
+        }
+    	
     	Location lastKnownLocation = mlocManager.getLastKnownLocation(locationProvider);
     	return lastKnownLocation;
     }

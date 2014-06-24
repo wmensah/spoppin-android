@@ -38,6 +38,7 @@ public class VenueRankRequest extends Request {
 			else{
 				JSONObject json;
 				json = new JSONObject(resval.data);
+				response.success = false;
 				response.errorMessage = json.getString("status");
 			}
 		}else{

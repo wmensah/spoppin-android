@@ -6,6 +6,10 @@ import java.util.Locale;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Build;
@@ -34,4 +38,31 @@ public class UIUtils {
         return null;
 
     }
+	
+	public static Dialog CreateDialog(String message
+			, String positiveButtonText
+			, String negativeButtonText
+			, DialogInterface.OnClickListener positiveOnClickListener
+			, DialogInterface.OnClickListener negativeOnClickListener
+			, Context context){
+		
+		AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setMessage(message)
+               .setPositiveButton(positiveButtonText, positiveOnClickListener)
+               .setNegativeButton(negativeButtonText, negativeOnClickListener);
+
+		return builder.create();		
+	}
+	
+	public static Dialog CreateDialog(String message
+			, String positiveButtonText
+			, DialogInterface.OnClickListener onClickListener
+			, Context context){
+		
+		AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setMessage(message)
+               .setPositiveButton(positiveButtonText, onClickListener);
+
+		return builder.create();		
+	}
 }

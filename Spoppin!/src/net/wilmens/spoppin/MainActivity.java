@@ -2,6 +2,7 @@ package net.wilmens.spoppin;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -12,17 +13,19 @@ import net.wilmens.spoppin.requests.VenueRankRequest;
 import net.wilmens.spoppin.requests.VenueRankResponse;
 import net.wilmens.spoppin.utilities.ConnectionUtils;
 import net.wilmens.spoppin.utilities.LocationUtils;
+import net.wilmens.spoppin.utilities.StringUtils;
 import net.wilmens.spoppin.utilities.UIUtils;
-
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.location.Address;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
-import android.os.Debug;
 import android.os.Handler;
 import android.os.Message;
 import android.os.StrictMode;
@@ -34,14 +37,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
-
-import net.wilmens.spoppin.R;
 
 public class MainActivity extends BaseSpoppinActivity implements IGPSActivity, INavigationMenu{
 	
@@ -153,6 +155,46 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity, I
         	public void onItemClick(AdapterView<?> parent, View view, int position, long id){
         		SpopPrompt(venueList.get(position).venue.getVenueId(), venueList.get(position).venue.getName());
         	}     
+        });
+        
+        // If you press and hold on a venue, you get a navigation prompt
+        lv.setOnItemLongClickListener(new OnItemLongClickListener(){
+
+			@Override
+			public boolean onItemLongClick(AdapterView<?> parent, View view,
+					final int position, long id) {
+				
+				// TODO: use resource strings
+				Dialog dialog = UIUtils.CreateDialog("Navigate to " + venueList.get(position).venue.getName() + "?"
+						, "Ok"
+						, "Cancel"
+						, new DialogInterface.OnClickListener() {
+			                   public void onClick(DialogInterface dialog, int id) {
+			                       
+			                	   // proceed to navigate
+			                	   String uri = String.format(Locale.ENGLISH, "google.navigation:q=%f,%f"
+			                			   , venueList.get(position).venue.getAddress().getLatitude()
+			                			   , venueList.get(position).venue.getAddress().getLongitude());
+									Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+									startActivity(intent);
+									
+			                   }
+							}
+		                   , new DialogInterface.OnClickListener() {
+			                   public void onClick(DialogInterface dialog, int id) {
+			                       // User cancelled the dialog
+			                	   dialog.cancel();
+			                   }
+		                   }
+		                   , parent.getContext());
+				
+				if (dialog != null){
+					dialog.show();
+					return true;
+				}
+				return false;
+			}
+        	
         });
 	}
 	
@@ -361,6 +403,29 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity, I
 	 * @param isSpoppin - If true, the Venue gets a thumb-up (spoppin) for the categories, or thumbs-down (sucks) otherwise
 	 */
 	private void RankVenue(int venueId, int[] items, boolean isSpoppin){
+		// get current location
+		if (!gps.isRunning()){
+			gps.resumeGPS();
+		}
+		Location loc = gps.getLastKnownLocation();
+		if (loc == null){
+			Dialog dialog = UIUtils.CreateDialog("Could not determine your current location."
+					, "Ah, bummer!" //TODO: localize
+					, new DialogInterface.OnClickListener(){
+
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							dialog.cancel();
+						}
+						
+					}
+					, MainActivity.this);
+			if (dialog != null){
+				dialog.show();
+			}
+			return;
+		}
+		
 		this.isSpoppin = isSpoppin;
     	
     	vrr = new VenueRankRequest(this);
@@ -372,6 +437,8 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity, I
 			
 			// Request parameters
 			List<RequestParameter> params = new java.util.ArrayList<RequestParameter>();
+			params.add(new RequestParameter("latitude", String.valueOf(loc.getLatitude())));
+			params.add(new RequestParameter("longitude", String.valueOf(loc.getLongitude())));
 			params.add(new RequestParameter("venue_id", String.valueOf(venueId)));
 			params.add(new RequestParameter("drinks", String.valueOf(items[0])));
 			params.add(new RequestParameter("music", String.valueOf(items[1])));
@@ -459,16 +526,38 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity, I
 		}
 	}
 	
+	@SuppressLint("NewApi")
 	public void VenueRank_ResponseHandler(){
 		if (vrr != null){
-			VenueRankResponse resval = vrr.getResponse();
-			if (resval == null)
+			VenueRankResponse response = vrr.getResponse();
+			if (response == null)
 				return;
-			this.PreProcessServerResponse(resval.result);
+			this.PreProcessServerResponse(response.result);
 			RequestCompleted();
-			if (resval.success){
+			if (response.success){
+				Log.d("spoppin", "venue rank success");
 				this.RefreshNearbyVenues();
-				Toast.makeText(this, selectedVenue + (this.isSpoppin? " 'spoppin!" : " sucks!"), Toast.LENGTH_LONG).show();
+				Toast.makeText(MainActivity.this, selectedVenue + (this.isSpoppin? " 'spoppin!" : " sucks!"), Toast.LENGTH_LONG).show();
+			}else{
+				// check error message for error code
+				if (!StringUtils.isNullOrEmpty(response.errorMessage)){
+					int errorCode = Integer.parseInt(response.errorMessage);
+					Log.d("spoppin", "errorCode = " + errorCode);
+					if (errorCode == 205){
+						Dialog dialog = UIUtils.CreateDialog("You're not in range"
+								, "Ok" // TODO: localize
+								, new DialogInterface.OnClickListener() {
+									
+									@Override
+									public void onClick(DialogInterface dialog, int which) {
+										dialog.cancel();										
+									}
+								}, MainActivity.this);
+						if (dialog != null){
+							dialog.show();
+						}
+					}
+				}
 			}
 		}
 	}
