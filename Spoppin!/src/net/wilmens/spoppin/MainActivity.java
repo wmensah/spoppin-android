@@ -6,6 +6,7 @@ import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import net.wilmens.spoppin.objects.ServerResponseEnum;
 import net.wilmens.spoppin.objects.Venue;
 import net.wilmens.spoppin.requests.GetVenueListRequest;
 import net.wilmens.spoppin.requests.GetVenueListResponse;
@@ -535,15 +536,16 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity, I
 			this.PreProcessServerResponse(response.result);
 			RequestCompleted();
 			if (response.success){
-				Log.d("spoppin", "venue rank success");
+				Log.d(context.getLogKey(), "venue rank successful");
 				this.RefreshNearbyVenues();
 				Toast.makeText(MainActivity.this, selectedVenue + (this.isSpoppin? " 'spoppin!" : " sucks!"), Toast.LENGTH_LONG).show();
 			}else{
 				// check error message for error code
 				if (!StringUtils.isNullOrEmpty(response.errorMessage)){
 					int errorCode = Integer.parseInt(response.errorMessage);
-					Log.d("spoppin", "errorCode = " + errorCode);
-					if (errorCode == 205){
+					Log.d(context.getLogKey(), "errorCode = " + errorCode);
+					
+					if (errorCode == ServerResponseEnum.NotNearVenue.Value()){
 						Dialog dialog = UIUtils.CreateDialog("You're not in range"
 								, "Ok" // TODO: localize
 								, new DialogInterface.OnClickListener() {
@@ -555,6 +557,23 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity, I
 								}, MainActivity.this);
 						if (dialog != null){
 							dialog.show();
+						}else{
+							Log.e(context.getLogKey(), "Error creating dialog for user not in range");
+						}
+					}else if (errorCode == ServerResponseEnum.VoteIntervalError.Value()){
+						Dialog dialog = UIUtils.CreateDialog("You spopped not too long ago. Please try again in a few mintues"
+								, "Ok" // TODO: localize
+								, new DialogInterface.OnClickListener() {
+									
+									@Override
+									public void onClick(DialogInterface dialog, int which) {
+										dialog.cancel();										
+									}
+								}, MainActivity.this);
+						if (dialog != null){
+							dialog.show();
+						}else{
+							Log.e(context.getLogKey(), "Error creating dialog for vote interval error");
 						}
 					}
 				}

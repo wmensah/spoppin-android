@@ -4,8 +4,10 @@ public enum ServerResponseEnum {
 	Unknown(0),
 	NotConnected(1),
 	OK(200),
-	InvalidAPIKey(201),
-	RequestTimeout(408);
+	InvalidAPIKey(401),
+	VoteIntervalError(420),
+	NotNearVenue(421),
+	RequestFailed(500);
 	
 	private final int _value;
 

@@ -86,7 +86,7 @@ public abstract class Request extends AsyncTask<Object, Object, Object>{
 		try {
 			response = httpclient.execute(httppost);
 		} catch (SocketTimeoutException e){
-			resval.result = ServerResponseEnum.RequestTimeout;
+			resval.result = ServerResponseEnum.RequestFailed;
 			resval.errorMessage = e.getMessage();
 			return resval;
 		} catch (Exception e){

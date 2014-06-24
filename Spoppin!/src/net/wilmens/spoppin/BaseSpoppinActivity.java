@@ -131,7 +131,7 @@ public class BaseSpoppinActivity extends ActionBarActivity {
 		switch(response){
 			case OK:
 				break;
-			case RequestTimeout:
+			case RequestFailed:
 				msg = getString(R.string.msg_request_timed_out);
 				break;
 			case NotConnected:
