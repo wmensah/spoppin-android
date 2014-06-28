@@ -148,7 +148,6 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity, I
         	locationChanged(loc.getLongitude(), loc.getLatitude());
 	    
 	    venueList = new ArrayList<BarRank>();
-        
         adapter = new BarRankAdapter(this, R.layout.list_item, venueList);
         lv = (ListView)findViewById(R.id.lstBars);
         lv.setAdapter(adapter);
@@ -220,7 +219,7 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity, I
 		// User may have toggled hide/show stats, so rebind adapter
         lv = (ListView)findViewById(R.id.lstBars);
         lv.setAdapter(adapter);
-		adapter.notifyDataSetChanged();
+		//adapter.notifyDataSetChanged();
 		
 		super.onResume();
 	}

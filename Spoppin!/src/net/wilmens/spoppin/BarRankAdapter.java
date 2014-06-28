@@ -67,10 +67,10 @@ public class BarRankAdapter extends ArrayAdapter<BarRank> {
 		BarRank barRank = data.get(position);
 		holder.lblName.setText(barRank.venue.getName());
 		holder.lblRank.setText(Integer.toString(barRank.rank));
-		holder.lblDrinks.setText("drinks:" + Double.toString(barRank.score.getDrinks()));
-		holder.lblMusic.setText("music:" + Double.toString(barRank.score.getMusic()));
-		holder.lblGirls.setText("girls:" + Double.toString(barRank.score.getGirls()));
-		holder.lblGuys.setText("guys:" + Double.toString(barRank.score.getGuys()));
+		holder.lblDrinks.setText("drinks:" + Integer.toString((int)barRank.score.getDrinks()));
+		holder.lblMusic.setText("music:" + Integer.toString((int)barRank.score.getMusic()));
+		holder.lblGirls.setText("girls:" + Integer.toString((int)barRank.score.getGirls()));
+		holder.lblGuys.setText("guys:" + Integer.toString((int)barRank.score.getGuys()));
 
 		switch(barRank.score.getBestCategory()){
 			case Drinks:
@@ -90,7 +90,7 @@ public class BarRankAdapter extends ArrayAdapter<BarRank> {
 		}
 		
 		holder.vToken.setVisibility(View.VISIBLE);
-		String color = (String) UIUtils.getColorArray().keySet().toArray()[position];
+		String color = (String) UIUtils.getColorArray().keySet().toArray()[position % UIUtils.getColorArray().size()];
 		((GradientDrawable)holder.vToken.getBackground()).setColor(Color.parseColor(color));
 		
 		return row;		

@@ -48,7 +48,7 @@ public class AboutActivity extends BaseSpoppinActivity {
 				    .getPackageInfo(context.getPackageName(), 0).versionName;
 
 	        if (!StringUtils.isNullOrEmpty(versionName)){
-	        	vAppVersion.setText("v" + versionName);
+	        	vAppVersion.setText("v" + versionName + " (beta)");
 	        }
 		} catch (NameNotFoundException e) {
 			e.printStackTrace();
@@ -73,7 +73,7 @@ public class AboutActivity extends BaseSpoppinActivity {
 				switch(position){
 				case 0:
 					// Help
-					url += "/docs/help.html";
+					url += "/docs/en/help.html";
 					break;
 				case 1:
 					// rate app
@@ -81,11 +81,11 @@ public class AboutActivity extends BaseSpoppinActivity {
 					break;
 				case 2:
 					// Privacy Policy
-					url += "/docs/privacy.html";
+					url += "/docs/en/privacy.html";
 					break;
 				case 3:
 					// Terms
-					url += "/docs/terms.html";
+					url += "/docs/en/terms.html";
 					break;
 				}
 				Intent i = new Intent(Intent.ACTION_VIEW);

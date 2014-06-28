@@ -10,7 +10,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -26,18 +25,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-
-//import com.google.android.gms.maps.CameraUpdateFactory;
-//import com.google.android.gms.maps.GoogleMap;
-//import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter;
-//import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
-//import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
-//import com.google.android.gms.maps.SupportMapFragment;
-//import com.google.android.gms.maps.model.CameraPosition;
-//import com.google.android.gms.maps.model.LatLng;
-//import com.google.android.gms.maps.model.LatLngBounds;
-//import com.google.android.gms.maps.model.Marker;
-//import com.google.android.gms.maps.model.MarkerOptions;
 
 public class VenueMapActivity extends ActionBarActivity {
 	
@@ -58,6 +45,7 @@ public class VenueMapActivity extends ActionBarActivity {
 	    
 	    SupportMapFragment mapFrag = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
 	    mMap = mapFrag.getMap();
+	    mMap.setMyLocationEnabled(true); // show current location
 	    builder = new LatLngBounds.Builder();
 	    
 	    // get markers from intent
@@ -95,24 +83,26 @@ public class VenueMapActivity extends ActionBarActivity {
 					public void onInfoWindowClick(Marker marker) {
 						String uri = String.format(Locale.ENGLISH, "google.navigation:q=%f,%f", marker.getPosition().latitude, marker.getPosition().longitude);
 						Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
-						startActivity(intent);
-						
+						startActivity(intent);						
 					}
 					
 				});
-				return v;
-				
+				return v;				
 			}
 
 			@Override
 			public View getInfoWindow(Marker arg0) {
 				// TODO Auto-generated method stub
 				return null;
-			}
-	    	
+			}	    	
 	    });
 	}
 	
+	/*
+	 * Places the markers on the map
+	 * @param venueList - list of venues to be displayed as markers on the map
+	 * @returns void
+	 */
 	private void BindMarkers(ArrayList<VenueMarker> venueList){
 		if (venueList.size() == 0)
 			return;
@@ -121,15 +111,12 @@ public class VenueMapActivity extends ActionBarActivity {
 		int i = 0;
 		for (VenueMarker v : venueList){
 			LatLng pos = new LatLng(v.getLatitutde(), v.getLongitude());
-			Float color = (Float) UIUtils.getColorArray().values().toArray()[i];
-			Log.d("map", "i = " + i + ", color=" + color);
+			Float color = (Float) UIUtils.getColorArray().values().toArray()[i % UIUtils.getColorArray().size()];
 			mMap.addMarker(new MarkerOptions().position(pos).title(v.getVenueName())
 					.alpha(1f)
 					.icon(BitmapDescriptorFactory.defaultMarker(color)));
-			builder.include(pos);
-			
+			builder.include(pos);			
 			i++;
 		}		
 	}
-
 }

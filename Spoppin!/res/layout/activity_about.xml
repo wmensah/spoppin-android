@@ -26,14 +26,14 @@
             android:gravity="center"
             android:text="version 1.0"
             android:layout_margin="5dp"
+            android:textColor="#848484"
             android:textAppearance="?android:attr/textAppearanceSmall" />
 
         <TextView
             android:id="@+id/textView2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Spoppin! is a decision influencing engine that 
-provides real-time updates for venues of entertainment around you." />
+            android:text="Spoppin! is a decision-influencing engine that provides real-time updates for venues of entertainment around you." />
         
         <View
        android:id="@+id/SplitLine_hor1"
