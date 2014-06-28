@@ -30,5 +30,23 @@
 	<string name="action_refresh">Refresh</string>
 	<string name="action_use_my_location">Use my location</string>
 	<string name="action_cancel_settings">Cancel Settings</string>
+	<string name="msg_not_in_range">Sorry, you\'re not within range</string>
+	<string name="msg_not_in_range_venue">Sorry, looks like you\'re not near %s. Please try again when you get there.</string>
+	<string name="ok">Ok</string>
+	<string name="cancel">Cancel</string>
+	<string name="msg_request_failed">Request Failed</string>
+	<string name="msg_spopped_not_long_ago">You spopped not too long ago. Please try again in a few minutes</string>
+	<string name="msg_location_error">Location Error</string>
+	<string name="msg_unable_to_determine_location">Sorry, we could not determine your current location.</string>
+	<string name="msg_location_not_found">Location not found</string>
+	<string name="msg_no_internet_connection">No Internet connection</string>
+	<string name="msg_cant_launch_market">Couldn\'t launch the market</string>
+	<string name="text_help">Help</string>
+	<string name="text_rateapp">Rate This App</string>
+	<string name="text_privacy_policy">Privacy Policy</string>
+	<string name="text_terms_conditions">Terms &amp; Conditions</string>
+	<string name="error_no_internet_connection">No Internet Connection</string>
+	<string name="error_all_fields_required">All fields are required</string>
+	<string name="text_awesome">Awesome!</string>
 
 </resources>

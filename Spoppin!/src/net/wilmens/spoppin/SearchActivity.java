@@ -49,6 +49,7 @@ public class SearchActivity extends ActionBarListActivity {
 	    // allow navigating up with the app icon
 	    ActionBar actionBar = getSupportActionBar();
 	    actionBar.setDisplayHomeAsUpEnabled(true);
+	    actionBar.setTitle("Search");
 
         mContext = this;
 

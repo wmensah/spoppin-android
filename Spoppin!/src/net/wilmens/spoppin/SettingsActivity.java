@@ -40,6 +40,7 @@ public class SettingsActivity extends BaseSpoppinActivity{
 	    // allow navigating up with the app icon
 	    ActionBar actionBar = getSupportActionBar();
 	    actionBar.setDisplayHomeAsUpEnabled(true);
+	    actionBar.setTitle("Settings");
 
 	    saveSettings = false;
 	    userPrefs = pm.getUserPreferences();
@@ -173,6 +174,16 @@ public class SettingsActivity extends BaseSpoppinActivity{
     		Log.d("spoppin", "settings canceled");
     	}
     	super.onStop();
+    }
+    
+    @Override
+    protected void onPause(){
+    	if (saveSettings){
+    		SaveSettings();
+    	}else{
+    		Log.d("spoppin", "settings canceled");
+    	}
+    	super.onPause();
     }
     
     private void SaveSettings(){

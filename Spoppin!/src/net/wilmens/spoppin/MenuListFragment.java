@@ -38,6 +38,7 @@ public class MenuListFragment extends ListFragment{
         
         adapter.add(new SlidingMenuItem("Map", R.drawable.ic_action_place));
         adapter.add(new SlidingMenuItem("Settings", R.drawable.ic_action_settings));
+        adapter.add(new SlidingMenuItem("About", R.drawable.ic_action_about));
         
         setListAdapter(adapter);
 	}
@@ -56,6 +57,11 @@ public class MenuListFragment extends ListFragment{
         	case 1:
         		//Settings
         		i = new Intent(this.getActivity().getApplicationContext(), SettingsActivity.class);
+        		this.startActivity(i);
+        		break;
+        	case 2:
+        		//About
+        		i = new Intent(this.getActivity().getApplicationContext(), AboutActivity.class);
         		this.startActivity(i);
         		break;
         }

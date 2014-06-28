@@ -7,7 +7,7 @@ import net.wilmens.spoppin.requests.NewVenueResponse;
 import net.wilmens.spoppin.utilities.ConnectionUtils;
 import net.wilmens.spoppin.utilities.StringUtils;
 import net.wilmens.spoppin.utilities.UIUtils;
-
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Address;
@@ -21,8 +21,6 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import net.wilmens.spoppin.R;
 
 public class VenueRequestActivity extends BaseSpoppinActivity implements IGPSActivity{
 	private double latitude;
@@ -40,6 +38,7 @@ public class VenueRequestActivity extends BaseSpoppinActivity implements IGPSAct
 	TextView txtZip;
 	TextView txtCountry;
 	Button btnSubmitRequest;
+	Context mContext;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -47,6 +46,7 @@ public class VenueRequestActivity extends BaseSpoppinActivity implements IGPSAct
 	    super.onCreate(savedInstanceState);
 	
 	    setContentView(R.layout.activity_venue_request);
+	    mContext = this;
 	    
 	    // allow navigating up with the app icon
 	    ActionBar actionBar = getSupportActionBar();
@@ -79,7 +79,7 @@ public class VenueRequestActivity extends BaseSpoppinActivity implements IGPSAct
 				public void onClick(View v) {
 					// check Internet connection
 					if (!(ConnectionUtils.isConnected(VenueRequestActivity.this))){
-						ShowOkDialog("Connectivity", "No internet connection", null);
+						UIUtils.showAlertDialog(mContext, R.string.error_no_internet_connection);
 						return;
 					}
 					
@@ -90,7 +90,7 @@ public class VenueRequestActivity extends BaseSpoppinActivity implements IGPSAct
 						StringUtils.isNullOrEmpty(txtState.getText().toString()) ||
 						StringUtils.isNullOrEmpty(txtZip.getText().toString()) ||
 						StringUtils.isNullOrEmpty(txtCountry.getText().toString())){
-						ShowOkDialog("Error", "All fields are required.", null);
+						UIUtils.showAlertDialog(mContext, R.string.error_all_fields_required);
 						return;
 					}
 							
@@ -154,8 +154,8 @@ public class VenueRequestActivity extends BaseSpoppinActivity implements IGPSAct
 				return; 
 			this.PreProcessServerResponse(resval.result);
 			if (resval.success){
-				ShowOkDialog(this.getString(R.string.dialog_venue_request_title)
-						, this.getString(resval.success? R.string.venue_request_submitted : R.string.venue_request_failed)
+				UIUtils.showAlertDialog(mContext
+						, (resval.success? R.string.venue_request_submitted : R.string.venue_request_failed)
 						, new DialogInterface.OnClickListener() {
 							
 							@Override

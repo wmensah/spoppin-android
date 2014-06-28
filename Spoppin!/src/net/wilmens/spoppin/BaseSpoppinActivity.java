@@ -98,22 +98,6 @@ public class BaseSpoppinActivity extends ActionBarActivity {
 		inflater.inflate(id, linBase);
     }
 	
-	protected void ShowOkDialog(String title, String message, DialogInterface.OnClickListener action){
-    	AlertDialog.Builder builder = new AlertDialog.Builder(this);
-    	builder.setTitle(title);
-    	builder.setMessage(message);
-    	builder.setCancelable(true);
-    	if (action == null)
-    		action = new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    dialog.cancel();
-                }
-            };
-        builder.setNeutralButton(android.R.string.ok, action);
-    	AlertDialog dialog = builder.create();
-    	dialog.show();
-    }
-	
 	protected void SetProgressLabelText(String text, Boolean show){
 		if (progressView != null)
 	    	progressView.setLabelText(text);

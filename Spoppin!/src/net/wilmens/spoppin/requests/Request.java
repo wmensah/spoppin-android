@@ -33,6 +33,7 @@ import android.util.Log;
 
 public abstract class Request extends AsyncTask<Object, Object, Object>{
 	private Uri requestUri;
+	private List<RequestParameter> parameters;
 	protected Activity requestingPage;
 	protected Method responseHandler;
 	
@@ -179,6 +180,7 @@ public abstract class Request extends AsyncTask<Object, Object, Object>{
 	}
 	
 	protected void buildRequest(String request, List<RequestParameter> params){
+		this.parameters = params;
 		Uri.Builder b = Uri.parse(APIHelper.getWebserviceUrl()).buildUpon();
 		b.appendPath(request);
 		
@@ -189,5 +191,17 @@ public abstract class Request extends AsyncTask<Object, Object, Object>{
 		}
 		
 		requestUri = b.build();
+	}
+	
+	public String getParameterValue(String key){
+		if (this.parameters == null || this.parameters.size() == 0){
+			return null;
+		}
+		for(RequestParameter p:this.parameters){
+			if (p.Key == key){
+				return p.Value;
+			}
+		}
+		return null;
 	}
 }

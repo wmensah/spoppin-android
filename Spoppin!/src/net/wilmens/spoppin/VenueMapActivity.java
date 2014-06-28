@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 import net.wilmens.spoppin.objects.VenueMarker;
+import net.wilmens.spoppin.utilities.UIUtils;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -18,6 +20,7 @@ import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter;
 import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
 import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -51,6 +54,7 @@ public class VenueMapActivity extends ActionBarActivity {
 	    // allow navigating up with the app icon
 	    ActionBar actionBar = getSupportActionBar();
 	    actionBar.setDisplayHomeAsUpEnabled(true);
+	    actionBar.setTitle("Map");
 	    
 	    SupportMapFragment mapFrag = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
 	    mMap = mapFrag.getMap();
@@ -114,11 +118,17 @@ public class VenueMapActivity extends ActionBarActivity {
 			return;
 		
 		mMap.clear();
-
+		int i = 0;
 		for (VenueMarker v : venueList){
 			LatLng pos = new LatLng(v.getLatitutde(), v.getLongitude());
-			mMap.addMarker(new MarkerOptions().position(pos).title(v.getVenueName()));
+			Float color = (Float) UIUtils.getColorArray().values().toArray()[i];
+			Log.d("map", "i = " + i + ", color=" + color);
+			mMap.addMarker(new MarkerOptions().position(pos).title(v.getVenueName())
+					.alpha(1f)
+					.icon(BitmapDescriptorFactory.defaultMarker(color)));
 			builder.include(pos);
+			
+			i++;
 		}		
 	}
 

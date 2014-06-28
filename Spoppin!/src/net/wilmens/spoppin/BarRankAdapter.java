@@ -3,9 +3,11 @@ package net.wilmens.spoppin;
 import java.util.ArrayList;
 
 import net.wilmens.spoppin.objects.PreferencesManager;
+import net.wilmens.spoppin.utilities.UIUtils;
 import android.app.Activity;
 import android.content.Context;
-import android.preference.PreferenceManager;
+import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +15,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 
 public class BarRankAdapter extends ArrayAdapter<BarRank> {
 
@@ -43,8 +47,8 @@ public class BarRankAdapter extends ArrayAdapter<BarRank> {
 			holder.lblMusic = (TextView)row.findViewById(R.id.lblMusic);
 			holder.lblGirls = (TextView)row.findViewById(R.id.lblGirls);
 			holder.lblGuys = (TextView)row.findViewById(R.id.lblGuys);
-			holder.imgIcon = (ImageView)row.findViewById(R.id.imgIcon);
 			holder.imgTopCategory = (ImageView)row.findViewById(R.id.imgTopCategory);
+			holder.vToken = (View)row.findViewById(R.id.venueToken);
 			
 			PreferencesManager pm = new PreferencesManager(context);
 			LinearLayout stats = (LinearLayout)row.findViewById(R.id.llVenueRankCategories);
@@ -67,7 +71,7 @@ public class BarRankAdapter extends ArrayAdapter<BarRank> {
 		holder.lblMusic.setText("music:" + Double.toString(barRank.score.getMusic()));
 		holder.lblGirls.setText("girls:" + Double.toString(barRank.score.getGirls()));
 		holder.lblGuys.setText("guys:" + Double.toString(barRank.score.getGuys()));
-		holder.imgIcon.setImageResource(barRank.icon);
+
 		switch(barRank.score.getBestCategory()){
 			case Drinks:
 				holder.imgTopCategory.setImageResource(R.drawable.drinks_off);
@@ -85,16 +89,16 @@ public class BarRankAdapter extends ArrayAdapter<BarRank> {
 				holder.imgTopCategory.setImageResource(R.drawable.ic_launcher); //TODO: replace this icon
 		}
 		
-		if (barRank.rank > 1){
-			holder.imgIcon.setVisibility(0);
-		}
+		holder.vToken.setVisibility(View.VISIBLE);
+		String color = (String) UIUtils.getColorArray().keySet().toArray()[position];
+		((GradientDrawable)holder.vToken.getBackground()).setColor(Color.parseColor(color));
 		
 		return row;		
 	}
 
 	static class BarRankHolder{
-		ImageView imgIcon;
 		ImageView imgTopCategory;
+		View vToken;
 		TextView lblRank;
 		TextView lblName;
 		TextView lblDrinks;

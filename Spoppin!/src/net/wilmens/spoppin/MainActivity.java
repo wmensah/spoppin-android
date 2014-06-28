@@ -21,7 +21,6 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.location.Address;
 import android.location.Location;
@@ -30,6 +29,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.StrictMode;
+import android.support.v7.app.ActionBar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -49,8 +49,6 @@ import android.widget.ToggleButton;
 public class MainActivity extends BaseSpoppinActivity implements IGPSActivity, INavigationMenu{
 	
 	private GPS gps;
-	//private double latitude;
-	//private double longitude;
 	private String selectedVenue;
 	private boolean isSpoppin;
 	
@@ -84,6 +82,10 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity, I
             StrictMode.setThreadPolicy(policy);
         }
         
+	    // allow navigating up with the app icon
+	    ActionBar actionBar = getSupportActionBar();
+	    actionBar.setDisplayHomeAsUpEnabled(true);
+	 
         lblCurrentLocation = (TextView)findViewById(R.id.lblCurrentLocation);
         txtNoVenueFound = (TextView)findViewById(R.id.txtVenueNotFound);
         
@@ -98,7 +100,7 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity, I
 
         timer.schedule( new TimerTask(){
            public void run() { 
-        	   mHandler.sendMessage(new Message()); // set msg.obj = "" if you need to update some text
+        	   mHandler.sendMessage(new Message());
             }
          }, delay, delay);
     }
@@ -141,7 +143,7 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity, I
         	}
         }
         if (loc == null)
-        	Toast.makeText(this, "Location not found", Toast.LENGTH_SHORT).show();
+        	Toast.makeText(this, R.string.msg_location_not_found, Toast.LENGTH_SHORT).show();
         else
         	locationChanged(loc.getLongitude(), loc.getLatitude());
 	    
@@ -214,6 +216,12 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity, I
 		if (!gps.isRunning()){
 			gps.resumeGPS();
 		}
+
+		// User may have toggled hide/show stats, so rebind adapter
+        lv = (ListView)findViewById(R.id.lstBars);
+        lv.setAdapter(adapter);
+		adapter.notifyDataSetChanged();
+		
 		super.onResume();
 	}
 	
@@ -354,7 +362,7 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity, I
     		return true;
     	}
     	Intent i = null;
-        if (item.getItemId() == R.id.action_refresh) {
+    	if (item.getItemId() == R.id.action_refresh) {
 			super.init();
 			this.SetProgressLabelText(getString(R.string.msg_loading), true);
 			gps.resumeGPS(); // onLocationChanged will set the venues
@@ -373,6 +381,15 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity, I
 			this.startActivity(i);
 			return true;
 		} else {
+			if (menu != null) {
+				// if the menu is showing, hide it, otherwise, show it
+				if (menu.isMenuShowing()){
+					menu.showContent(true);
+				}else{
+					menu.showMenu();
+				}
+    	        return true;
+    	    }
 			return super.onOptionsItemSelected(item);
 		}
     }
@@ -410,8 +427,8 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity, I
 		}
 		Location loc = gps.getLastKnownLocation();
 		if (loc == null){
-			Dialog dialog = UIUtils.CreateDialog("Could not determine your current location."
-					, "Ah, bummer!" //TODO: localize
+			Dialog dialog = UIUtils.CreateDialog(getString(R.string.msg_unable_to_determine_location)
+					, R.string.ok
 					, new DialogInterface.OnClickListener(){
 
 						@Override
@@ -546,8 +563,24 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity, I
 					Log.d(context.getLogKey(), "errorCode = " + errorCode);
 					
 					if (errorCode == ServerResponseEnum.NotNearVenue.Value()){
-						Dialog dialog = UIUtils.CreateDialog("You're not in range"
-								, "Ok" // TODO: localize
+						// get venue name
+						String venueName = null;
+						String venueId = vrr.getParameterValue("venue_id");
+						if (!StringUtils.isNullOrEmpty(venueId)){
+							Venue venue = this.getVenueById(Integer.parseInt(venueId));
+							if (venue != null){
+								venueName = venue.getName();
+							}
+						}
+						
+						// If we know the venue name, let the user know they are not near the venue
+						// Otherwise, just let them know they are not in range
+						String notInRangeMsg = getString(R.string.msg_not_in_range_venue);
+						if (!StringUtils.isNullOrEmpty(venueName)){
+							notInRangeMsg = String.format(getString(R.string.msg_not_in_range_venue), venueName);
+						}
+						Dialog dialog = UIUtils.CreateDialog(notInRangeMsg
+								, R.string.ok
 								, new DialogInterface.OnClickListener() {
 									
 									@Override
@@ -561,8 +594,9 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity, I
 							Log.e(context.getLogKey(), "Error creating dialog for user not in range");
 						}
 					}else if (errorCode == ServerResponseEnum.VoteIntervalError.Value()){
-						Dialog dialog = UIUtils.CreateDialog("You spopped not too long ago. Please try again in a few mintues"
-								, "Ok" // TODO: localize
+						Dialog dialog = UIUtils.CreateDialog(R.string.msg_spopped_not_long_ago
+								, R.string.msg_request_failed
+								, R.string.ok
 								, new DialogInterface.OnClickListener() {
 									
 									@Override
@@ -634,8 +668,20 @@ public class MainActivity extends BaseSpoppinActivity implements IGPSActivity, I
 			gps.stopGPS();
 			this.lblCurrentLocation.setVisibility(View.GONE);
 			this.SetProgressLabelText(null, false);
-			Toast.makeText(this, "No Internet Connection", Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, R.string.msg_no_internet_connection, Toast.LENGTH_SHORT).show();
 		}
+	}
+	
+	private Venue getVenueById(int venueId){
+		if (venueList == null || venueList.size() == 0){
+			return null;
+		}
+		for (BarRank br:venueList){
+			if (br.venue.getVenueId() == venueId){
+				return br.venue;
+			}
+		}
+		return null;
 	}
 
 
