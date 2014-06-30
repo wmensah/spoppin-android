@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="net.wilmens.spoppin"
-    android:versionCode="1"
-    android:versionName="1.0.1" >
+    android:versionCode="2"
+    android:versionName="1.0.2" >
 
     <uses-sdk
         android:minSdkVersion="11"
@@ -33,9 +33,11 @@
 
         
         <!--  dev-macbook pro -->
+        <!--  DEV: AIzaSyCqsbVvOWfWO8ybwcK-qACafgIi4XDdYdA -->
+        <!--  PROD: AIzaSyDsnhXcbdjKlLoRrFN9cDuR0ZmRa5tR2f0 -->
         <meta-data
     		android:name="com.google.android.maps.v2.API_KEY"
-    		android:value="AIzaSyCqsbVvOWfWO8ybwcK-qACafgIi4XDdYdA"/>
+    			  android:value="AIzaSyDsnhXcbdjKlLoRrFN9cDuR0ZmRa5tR2f0"/>
         
         <activity
             android:name="net.wilmens.spoppin.MainActivity"
