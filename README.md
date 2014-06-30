@@ -1,4 +1,4 @@
 spoppin-android
 ===============
 
-Spoppin! is an open-source + crowd-sourced + real-time decision-influencing engine for bars, night clubs and other entertainment venues.
+The social/decision-influencing engine that provides real-time updates for venues of entertainment around you.
