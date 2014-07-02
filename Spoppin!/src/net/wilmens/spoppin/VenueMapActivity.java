@@ -5,7 +5,11 @@ import java.util.Locale;
 
 import net.wilmens.spoppin.objects.VenueMarker;
 import net.wilmens.spoppin.utilities.UIUtils;
+import android.content.Context;
 import android.content.Intent;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
@@ -32,6 +36,7 @@ public class VenueMapActivity extends ActionBarActivity {
 	LatLngBounds.Builder builder;
 
 	/** Called when the activity is first created. */
+	@SuppressWarnings("unchecked")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
@@ -49,10 +54,9 @@ public class VenueMapActivity extends ActionBarActivity {
 	    builder = new LatLngBounds.Builder();
 	    
 	    // get markers from intent
-	    Intent i = this.getIntent();
+	    final Intent i = this.getIntent();
 	    if (i.getExtras() != null && i.getSerializableExtra("venues") != null){
-	    	@SuppressWarnings("unchecked")
-			ArrayList<VenueMarker> venueList = (ArrayList<VenueMarker>) i.getSerializableExtra("venues");	    	
+	    	ArrayList<VenueMarker> venueList = (ArrayList<VenueMarker>) i.getSerializableExtra("venues");	    	
 	    	BindMarkers(venueList);
 	    }
 	    
@@ -61,9 +65,13 @@ public class VenueMapActivity extends ActionBarActivity {
 
 			@Override
 			public void onCameraChange(CameraPosition position) {
-				// TODO Auto-generated method stub
-	        	mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), 50));
-	            // Remove listener to prevent position reset on camera move.
+				if (i.getExtras() != null && ((ArrayList<VenueMarker>) i.getSerializableExtra("venues")).size() > 0){
+		        	mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), 50));
+				}else{
+					// No markers to load so default the map to the user's current location
+					ZoomToCurrentLocation();
+				}
+				// Remove listener to prevent position reset on camera move.
 	        	mMap.setOnCameraChangeListener(null);
 			}
 	    });
@@ -118,5 +126,24 @@ public class VenueMapActivity extends ActionBarActivity {
 			builder.include(pos);			
 			i++;
 		}		
+	}
+	
+	// Zoom the map to the user's current location
+	private void ZoomToCurrentLocation(){		
+		 LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+         Criteria criteria = new Criteria();
+
+         Location location = locationManager.getLastKnownLocation(locationManager.getBestProvider(criteria, false));
+         if (location != null)
+         {
+         	mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
+                     new LatLng(location.getLatitude(), location.getLongitude()), 13));
+
+             CameraPosition cameraPosition = new CameraPosition.Builder()
+             .target(new LatLng(location.getLatitude(), location.getLongitude()))      // Sets the center of the map to location user
+             .zoom(17)                   // Sets the zoom
+             .build();                   // Creates a CameraPosition from the builder
+             mMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+         }
 	}
 }

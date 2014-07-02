@@ -16,7 +16,6 @@ import net.wilmens.spoppin.utilities.ConnectionUtils;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
@@ -75,7 +74,7 @@ public abstract class Request extends AsyncTask<Object, Object, Object>{
 		int timeoutSocket = 5000; 
 		HttpConnectionParams.setSoTimeout(httpParameters, timeoutSocket);
 		
-		DefaultHttpClient   httpclient = new DefaultHttpClient(httpParameters);
+		DefaultHttpClient httpclient = new DefaultHttpClient(httpParameters);
 		HttpPost httppost = new HttpPost(this.requestUri.toString());
 		// Depends on your web service
 		httppost.setHeader("Content-type", "application/json");
