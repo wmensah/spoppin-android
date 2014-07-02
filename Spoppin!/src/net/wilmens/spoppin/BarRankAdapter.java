@@ -3,11 +3,13 @@ package net.wilmens.spoppin;
 import java.util.ArrayList;
 
 import net.wilmens.spoppin.objects.PreferencesManager;
+import net.wilmens.spoppin.objects.VenueColor;
 import net.wilmens.spoppin.utilities.UIUtils;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,8 +17,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 
 public class BarRankAdapter extends ArrayAdapter<BarRank> {
 
@@ -90,8 +90,8 @@ public class BarRankAdapter extends ArrayAdapter<BarRank> {
 		}
 		
 		holder.vToken.setVisibility(View.VISIBLE);
-		String color = (String) UIUtils.getColorArray().keySet().toArray()[position % UIUtils.getColorArray().size()];
-		((GradientDrawable)holder.vToken.getBackground()).setColor(Color.parseColor(color));
+		VenueColor color = UIUtils.getColorArray()[position % (UIUtils.getColorArray().length-1)];
+		((GradientDrawable)holder.vToken.getBackground()).setColor(Color.parseColor(color.hexValue));
 		
 		return row;		
 	}

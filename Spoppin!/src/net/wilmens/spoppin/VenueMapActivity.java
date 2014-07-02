@@ -3,6 +3,7 @@ package net.wilmens.spoppin;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import net.wilmens.spoppin.objects.VenueColor;
 import net.wilmens.spoppin.objects.VenueMarker;
 import net.wilmens.spoppin.utilities.UIUtils;
 import android.content.Context;
@@ -119,10 +120,10 @@ public class VenueMapActivity extends ActionBarActivity {
 		int i = 0;
 		for (VenueMarker v : venueList){
 			LatLng pos = new LatLng(v.getLatitutde(), v.getLongitude());
-			Float color = (Float) UIUtils.getColorArray().values().toArray()[i % UIUtils.getColorArray().size()];
+			VenueColor color = UIUtils.getColorArray()[i % (UIUtils.getColorArray().length-1)];
 			mMap.addMarker(new MarkerOptions().position(pos).title(v.getVenueName())
 					.alpha(1f)
-					.icon(BitmapDescriptorFactory.defaultMarker(color)));
+					.icon(BitmapDescriptorFactory.defaultMarker(color.bitmapValue)));
 			builder.include(pos);			
 			i++;
 		}		

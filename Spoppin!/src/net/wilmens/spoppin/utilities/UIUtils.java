@@ -1,11 +1,11 @@
 package net.wilmens.spoppin.utilities;
 
 import java.io.IOException;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 
 import net.wilmens.spoppin.R;
+import net.wilmens.spoppin.objects.VenueColor;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -131,18 +131,18 @@ public class UIUtils {
 		return builder.create();		
 	}
 	
-	public static LinkedHashMap<String, Float> getColorArray(){
-		LinkedHashMap<String, Float> colors = new LinkedHashMap<String, Float>();
-		colors.put("#FA58F4", BitmapDescriptorFactory.HUE_MAGENTA);
-		colors.put("#01DF01", BitmapDescriptorFactory.HUE_GREEN);
-		colors.put("#9A2EFE", BitmapDescriptorFactory.HUE_VIOLET);
-		colors.put("#FE9A2E", BitmapDescriptorFactory.HUE_ORANGE);
-		colors.put("#FE2E2E", BitmapDescriptorFactory.HUE_RED);
-		colors.put("#2E64FE", BitmapDescriptorFactory.HUE_BLUE);
-		colors.put("#01DF01", BitmapDescriptorFactory.HUE_AZURE);
-		colors.put("#FA58AC", BitmapDescriptorFactory.HUE_ROSE);
-		colors.put("#58D3F7", BitmapDescriptorFactory.HUE_CYAN);
-		colors.put("#FFFF00", BitmapDescriptorFactory.HUE_YELLOW);
+	public static VenueColor[] getColorArray(){
+		VenueColor[] colors = new VenueColor[10];
+		colors[0] = new VenueColor("#FA58F4", BitmapDescriptorFactory.HUE_MAGENTA);
+		colors[1] = new VenueColor("#01DF01", BitmapDescriptorFactory.HUE_GREEN);
+		colors[2] = new VenueColor("#9A2EFE", BitmapDescriptorFactory.HUE_VIOLET);
+		colors[3] = new VenueColor("#FE9A2E", BitmapDescriptorFactory.HUE_ORANGE);
+		colors[4] = new VenueColor("#FE2E2E", BitmapDescriptorFactory.HUE_RED);
+		colors[5] = new VenueColor("#2E64FE", BitmapDescriptorFactory.HUE_BLUE);
+		colors[6] = new VenueColor("#66CCFF", BitmapDescriptorFactory.HUE_AZURE);
+		colors[7] = new VenueColor("#FA58AC", BitmapDescriptorFactory.HUE_ROSE);
+		colors[8] = new VenueColor("#58D3F7", BitmapDescriptorFactory.HUE_CYAN);
+		colors[9] = new VenueColor("#FFFF00", BitmapDescriptorFactory.HUE_YELLOW);
 		return colors;
 	}
 }
