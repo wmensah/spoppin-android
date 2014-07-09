@@ -1,7 +1,7 @@
 spoppin-android
 ===============
 
-The social/decision-influencing engine that provides real-time updates for venues of entertainment around you.
+Spoppin! is a social/decision-influencing engine that provides real-time updates for venues of entertainment around you.
 
 
 Venues nearby | Spop prompt
