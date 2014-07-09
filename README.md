@@ -4,7 +4,7 @@ spoppin-android
 The social/decision-influencing engine that provides real-time updates for venues of entertainment around you.
 
 
-Main Page  | Spop Prompt
+Venues nearby | Spop prompt
 ------------- | -------------
 ![ScreenShot](http://spoppin.com/images/screenshots/android/mainpage.png)   | ![ScreenShot](http://spoppin.com/images/screenshots/android/spop_prompt.png) 
 
