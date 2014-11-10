@@ -48,5 +48,6 @@
 	<string name="error_no_internet_connection">No Internet Connection</string>
 	<string name="error_all_fields_required">All fields are required</string>
 	<string name="text_awesome">Awesome!</string>
+	<string name="facebook_app_id">1485774411702987</string>
 
 </resources>
